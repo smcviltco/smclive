@@ -1,0 +1,16 @@
+<odoo>
+    <data>
+        <record id="view_user_attendance_tree_inherit" model="ir.ui.view">
+            <field name="name">user.attendance.tree.inherit</field>
+            <field name="model">user.attendance</field>
+            <field name="priority" eval="40"/>
+            <field name="inherit_id" ref="to_attendance_device.view_attendance_data_tree"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='employee_id']" position="after">
+                    <field name="address_id"/>
+                    <field name="department_id"/>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>
