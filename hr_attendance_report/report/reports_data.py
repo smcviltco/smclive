@@ -51,6 +51,6 @@ class EmpReport(models.AbstractModel):
             'employees': employees,
             'departments': data.mapped('department_id'),
             'days': up_days,
-            'cols': len(up_days)+2,
+            'cols': len(up_days)+6,
             # 'get_attendance': self.get_attendance(day),
         }
