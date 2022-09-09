@@ -1,0 +1,41 @@
+<odoo>
+    <data>
+
+<!--        <record id="action_account_move_server" model="ir.actions.server">-->
+<!--            <field name="name">Assign Branches</field>-->
+<!--            <field name="model_id" ref="account.model_account_move"/>-->
+<!--            <field name="binding_model_id" ref="account.model_account_move"/>-->
+<!--            <field name="state">code</field>-->
+<!--            <field name="code">-->
+<!--                if records:-->
+<!--                action = records.action_add_branch()-->
+<!--            </field>-->
+<!--        </record>-->
+
+        <record id="view_partner_tree_inh" model="ir.ui.view">
+            <field name="name">res.partner.tree</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.view_partner_tree"/>
+            <field name="arch" type="xml">
+
+                <xpath expr="//field[@name='company_id']" position="before">
+                    <field name="branch_id"/>
+                </xpath>
+
+            </field>
+        </record>
+
+        <record id="view_account_form_inherited" model="ir.ui.view">
+            <field name="name">account.account.form.inherited</field>
+            <field name="inherit_id" ref="account.view_account_form"/>
+            <field name="model">account.account</field>
+            <field name="priority">100</field>
+            <field type="xml" name="arch">
+                <xpath expr="//field[@name='tag_ids']" position="after">
+                    <field name="seq_no"/>
+                </xpath>
+            </field>
+        </record>
+
+    </data>
+</odoo>
