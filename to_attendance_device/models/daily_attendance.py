@@ -30,29 +30,33 @@ class HrAttendanceInh(models.Model):
                         data.append(att.timestamp)
                         att.daily_att_created = True
                 employee = self.env['hr.employee'].search([('barcode', '=', user.user_id)], limit=1)
+                # if employee.id == 41:
+                #     print(data)
+                data = sorted(data)
+                # print(data)
                 if len(data) > 1:
                     if data[-1].date() == d and data[0].date() == d and employee:
-                        rec = self.env['hr.attendance'].create({
+                        reco = self.env['hr.attendance'].create({
                            'employee_id': employee.id,
-                           'check_in': data[-1],
-                           'check_out': data[0], })
-                if len(data) == 1:
-                    if employee.shift_id:
-                        out = str(int(employee.shift_id.check_out))
-                        out = int(out.split(':')[0])-6
-                        if out < 10:
-                            out = '0' + str(out)
-                        out = str(out) + ':00'
-                        out_time = str(data[0].date()) + ' ' + out + ':00'
-                        date_time_obj = datetime.strptime(out_time, '%Y-%m-%d %H:%M:%S')
-                        d = date_time_obj.strftime("%d-%m-%Y %H:%M:%S")
-                        s = datetime.strptime(d, '%d-%m-%Y %H:%M:%S')
-                        rec = self.env['hr.attendance'].create({
-                            'employee_id': employee.id,
-                            'check_in': data[-1],
-                            'check_out': s
-                        })
-#
+                           'check_in': data[0],
+                           'check_out': data[-1], })
+                    # if len(data) == 1:
+                    #     if employee.shift_id:
+                    #         out = str(int(employee.shift_id.check_out))
+                    #         out = int(out.split(':')[0])-6
+                    #         if out < 10:
+                    #             out = '0' + str(out)
+                    #         out = str(out) + ':00'
+                    #         out_time = str(data[-1].date()) + ' ' + out + ':00'
+                    #         date_time_obj = datetime.strptime(out_time, '%Y-%m-%d %H:%M:%S')
+                    #         d = date_time_obj.strftime("%d-%m-%Y %H:%M:%S")
+                    #         s = datetime.strptime(d, '%d-%m-%Y %H:%M:%S')
+                    #         rec = self.env['hr.attendance'].create({
+                    #             'employee_id': employee.id,
+                    #             'check_in': data[0],
+                    #             'check_out': s
+                    #         })
+
 # class DailyUserAttendance(models.Model):
 #     _name = 'daily.user.attendance'
 #     _rec_name = 'employee_id'
