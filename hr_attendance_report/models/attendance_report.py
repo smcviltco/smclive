@@ -68,16 +68,22 @@ class AttendanceReport(models.TransientModel):
         return True
 
     def get_overtime(self, emp):
-        time = (emp.st*9) - emp.ot
+        res = self.env['attendance.report'].browse(self.env.context.get('active_ids'))
+        r = sum(self.env['hr.attendance'].search([('employee_id', '=', emp.id)]).filtered(lambda x: x.check_in.date() >= res.date_from and x.check_in.date() <= res.date_to).mapped('worked_hours'))
+        time = (emp.st*9) - r
+        # print(time)
         if time < 0:
-            return abs(time)
+            return '{0:02.0f}:{1:02.0f}'.format(*divmod(abs(time) * 60, 60))
         else:
             return 0
+        # print(r)
+
+        # return '{0:02.0f}:{1:02.0f}'.format(*divmod(r * 60, 60))
 
     def get_public_holiday(self, date):
-        print('hhh')
+        # print('hhh')
         leaves = self.env['public.holidays'].search([])
-        print(leaves)
+        # print(leaves)
         check = False
         for leave in leaves:
             if date[2] >= leave.date_from and date[2] <= leave.date_to and date[1] != 'Sun':
@@ -112,7 +118,9 @@ class AttendanceReport(models.TransientModel):
                                         # rec.employee_id.late_in = rec.employee_id.late_in + 1
                                 t = (rec.check_out - rec.check_in).total_seconds()/3600
                                 rec.employee_id.ot = rec.employee_id.ot + t
-                                # if emp.id == 25:
+                                if emp.id == 25:
+                                    print(rec.employee_id.ot)
+                                    # print('dd')
                                 #     print(check_in)
                                 #     print(rec.employee_id.late_in)
                             if rec.check_in and not rec.check_out:
