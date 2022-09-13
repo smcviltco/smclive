@@ -119,7 +119,7 @@
                                     </t>
                                     <tr>
                                         <td colspan="6" style="font-weight:bold;">TOTAL</td>
-                                        <td class="text-center" style="font-weight:bold;"><span t-esc="current_subtotal"/></td>
+                                        <td class="text-center" style="font-weight:bold;"><span t-esc="'{0:,.2f}'.format(current_subtotal)"/></td>
                                     </tr>
                                 </tbody>
                             </table>
