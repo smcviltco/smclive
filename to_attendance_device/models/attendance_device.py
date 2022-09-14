@@ -1182,10 +1182,29 @@ class AttendanceDevice(models.Model):
             if error_msg and r.debug_message:
                 r.message_post(body=error_msg)
 
-
-
-
-
+    def action_check_connectionss(self):
+        for r in self:
+            machine_ip = r.ip
+            port = r.port
+            force_udp = self.protocol == 'udp'
+            password = self.password or 0
+            zkc = ZK(self.ip, self.port, self.timeout, password=password, force_udp=force_udp, ommit_ping=self.omit_ping)
+            connc = ''
+            # try:
+            connc = zkc.connect()
+            if connc:
+                connc.disconnect()
+                return True
+            else:
+                return False
+            # users = connc.get_users()
+            # except Exception as e:
+            #     raise UserError('The connection has not been achieved')
+            # finally:
+            #     if connc:
+            #         connc.disconnect()
+            #         raise UserError(_('successful connection:  "%s".') %
+            #                         (users))
 
     def action_check_connection(self):
         for r in self:

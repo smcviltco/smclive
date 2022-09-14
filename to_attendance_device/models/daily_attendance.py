@@ -11,6 +11,14 @@ _logger = logging.getLogger(__name__)
 class HrAttendanceInh(models.Model):
     _inherit = 'hr.attendance'
 
+    def action_get_device_attendance(self):
+        devices = self.env['attendance.device'].search([('state', '=', 'confirmed')])
+        for device in devices:
+            # rec = device.action_check_connectionss()
+            # if rec:
+            #     print(rec)
+            device.action_attendance_download()
+
     def action_create_daily_attendance(self):
         # dates = self.env['user.attendance'].search([('daily_att_created', '=', True)])
         # for ff in dates:
