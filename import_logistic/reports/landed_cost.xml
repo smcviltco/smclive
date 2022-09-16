@@ -58,7 +58,15 @@
                                 <strong>BL No: </strong><span class="m-0" t-field="o.bl_no"/>
                             </div>
                             <div class="col-6" style="font-size:17px;">
-                                <strong>Created Date: </strong><span class="m-0" t-esc="o.get_print_date()"/>
+                                <strong>Print Date: </strong><span class="m-0" t-esc="o.get_print_date()"/>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-6" style="font-size:17px;">
+<!--                                <strong>BL No: </strong><span class="m-0" t-field="o.bl_no"/>-->
+                            </div>
+                            <div class="col-6" style="font-size:17px;">
+                                <strong>Created Date: </strong><span class="m-0" t-esc="o.date_planned.strftime('%d/%m/%Y')"/>
                             </div>
                         </div>
                         <div class="row">
