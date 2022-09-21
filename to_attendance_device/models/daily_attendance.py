@@ -48,6 +48,12 @@ class HrAttendanceInh(models.Model):
                            'employee_id': employee.id,
                            'check_in': data[0],
                            'check_out': data[-1], })
+                if len(data) == 1:
+                    if data[0].date() == d and employee:
+                        recor = self.env['hr.attendance'].create({
+                            'employee_id': employee.id,
+                            'check_in': data[0],
+                             })
                     # if len(data) == 1:
                     #     if employee.shift_id:
                     #         out = str(int(employee.shift_id.check_out))
