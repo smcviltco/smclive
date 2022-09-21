@@ -74,6 +74,7 @@
                     <field name="late_out" invisible="1"/>
                     <field name="st" invisible="1"/>
                     <field name="ot" invisible="1"/>
+                    <field name="absent" invisible="1"/>
                 </xpath>
             </field>
         </record>

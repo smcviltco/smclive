@@ -24,6 +24,7 @@ class HrEmployeeInh(models.Model):
     st = fields.Integer()
     ot = fields.Integer()
     my_activity_date_deadline = fields.Date()
+    absent = fields.Integer()
 
 #     bonus = fields.Float('Bonus', compute="_compute_bonus")
 #

@@ -50,6 +50,9 @@
                                             <th style="text-align:center;border:1px solid black;">
                                                 <strong>OT</strong>
                                             </th>
+                                            <th style="text-align:center;border:1px solid black;">
+                                                <strong>A</strong>
+                                            </th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -84,6 +87,9 @@
                                                         </td>
                                                         <td style="text-align:center;border:1px solid black;">
                                                             <t t-esc="date_wizard.get_overtime(emp)"/>
+                                                        </td>
+                                                        <td style="text-align:center;border:1px solid black;">
+                                                            <t t-esc="emp.absent"/>
                                                         </td>
                                                     </tr>
                                                 </t>
