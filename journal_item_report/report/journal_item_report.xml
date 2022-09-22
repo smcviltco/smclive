@@ -8,7 +8,7 @@
                         <div class="page">
                             <div class="oe_structure"/>
                             <div class="text-center">
-                                <h3>Journal Enteries</h3>
+                                <h3>Journal Items</h3>
                             </div>
                             <div class="row">
                                 <table class="table table-sm" name="account_lines_table"
