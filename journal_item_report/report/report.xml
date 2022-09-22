@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <report
+            id="journal_item_pdf"
+            string="Journal Items"
+            model="account.move.line"
+            report_type="qweb-pdf"
+            name="journal_item_report.journal_item_report_pdf"
+            file="journal_item_report.journal_item_report_pdf"/>
+</odoo>

@@ -1,0 +1,101 @@
+<odoo>
+    <template id="journal_item_report_pdf">
+        <t t-call="web.html_container">
+            <t t-call="web.external_layout">
+                <div class="page">
+                    <div class="oe_structure"/>
+                    <div>
+                        <div class="page">
+                            <div class="oe_structure"/>
+                            <div class="text-center">
+                                <h3>Journal Enteries</h3>
+                            </div>
+                            <div class="row">
+                                <table class="table table-sm" name="account_lines_table"
+                                       style="border-bottom:1px solid black;font-size:12px;">
+                                    <thead>
+                                        <tr style="background-color:#d9d8d7;">
+                                            <th>
+                                                Date
+                                            </th>
+                                            <th>
+                                                <span>Journal Entry</span>
+                                            </th>
+                                            <th>
+                                                <span>Account</span>
+                                            </th>
+                                            <th>
+                                                <span>Partner</span>
+                                            </th>
+                                            <th>
+                                                <span>Label</span>
+                                            </th>
+                                            <th>
+                                                <span>Debit</span>
+                                            </th>
+                                            <th>
+                                                <span>Credit</span>
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <t t-set="total_debit" t-value="0"/>
+                                        <t t-set="total_credit" t-value="0"/>
+                                        <t t-foreach="docs" t-as="cur">
+                                            <tr>
+                                                <td style="text-align:left;">
+                                                    <t t-esc="cur['date']"/>
+                                                </td>
+                                                <td style="text-align:left;">
+                                                    <t t-esc="cur['move_id']['name']"/>
+                                                </td>
+                                                <td style="text-align:left;">
+                                                    <t t-esc="cur['account_id']['name']"/>
+                                                </td>
+                                                <td style="text-align:left;">
+                                                    <t t-esc="cur['partner_id']['name']"/>
+                                                </td>
+                                                <td style="text-align:left;">
+                                                    <t t-esc="cur['name']"/>
+                                                </td>
+                                                <td style="text-align:left;">
+                                                    <t t-esc="cur['debit']"/>
+                                                    <t t-set="total_debit"
+                                                       t-value="total_debit+cur['debit']"/>
+                                                </td>
+                                                <td style="text-align:left;">
+                                                    <t t-esc="cur['credit']"/>
+                                                    <t t-set="total_credit"
+                                                       t-value="total_credit+cur['credit']"/>
+                                                </td>
+                                            </tr>
+                                        </t>
+                                        <tr>
+                                            <td/>
+                                            <td/>
+                                            <td/>
+                                            <td/>
+                                            <td/>
+                                            <td>
+                                                <strong>
+                                                    <span t-esc="total_debit"
+                                                          t-options="{&quot;widget&quot;: &quot;float&quot;, &quot;precision&quot;: 2}"/>
+                                                </strong>
+                                            </td>
+                                            <td>
+                                                <strong>
+                                                    <span t-esc="total_credit"
+                                                          t-options="{&quot;widget&quot;: &quot;float&quot;, &quot;precision&quot;: 2}"/>
+                                                </strong>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </t>
+        </t>
+    </template>
+</odoo>
