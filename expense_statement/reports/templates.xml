@@ -29,6 +29,15 @@
                                 </t>
                             </tr>
                         </t>
+                        <tr>
+                            <td><strong>Total</strong></td>
+                            <t t-foreach="accounts" t-as="acc">
+                                <t t-set="account_total" t-value="get_account_total(acc)"/>
+                                <td class="text-center">
+                                   <strong> <span t-esc="'{0:,.1f}'.format(float(account_total))"/></strong>
+                                </td>
+                            </t>
+                        </tr>
                     </table>
                 </div>
             </t>
