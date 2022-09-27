@@ -30,6 +30,7 @@
                     <field name="max_discount"/>
                     <field name="allowed_discount"/>
                     <field name="create_user"/>
+
                 </xpath>
                 <xpath expr="//field[@name='partner_id']" position="after">
                     <!--                    <field name="manager_discount" groups="smc_project_latest.group_sale_discount_manager"/>-->
@@ -144,6 +145,8 @@
                     <field name="shipping_address"/>
                     <field name="partner_mobile"/>
                     <field name="create_user"/>
+<!--                    <field name="create_user_id" invisible="1"/>-->
+
                     <field name="purchase_id" attrs="{'invisible': [('show_origin' ,'=', False)]}"/>
                     <field name="sale_id" attrs="{'invisible': [('show_origin' ,'=', True)]}"/>
                     <field name="invoice_origin"/>

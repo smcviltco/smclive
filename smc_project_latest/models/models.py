@@ -447,7 +447,8 @@ class StockPicking(models.Model):
 
     shipping_address = fields.Char(string='Shipping Address', related='partner_id.street')
     partner_mobile = fields.Char(string='Mobile', related='partner_id.mobile')
-    create_user = fields.Many2one('res.users', string='User', compute="compute_self_id")
+    create_user = fields.Many2one('res.users', string='User', store=True, compute="compute_self_id")
+    # create_user_id = fields.Many2one('res.users', string='User')
     invoice_origin = fields.Many2one('account.move', compute='_compute_invoice_origin')
     show_origin = fields.Boolean('Show Origin', compute='compute_show_origin')
 
@@ -467,6 +468,8 @@ class StockPicking(models.Model):
                                                      limit=1)
             i.invoice_origin = record.id
 
+    @api.depends('sale_id', 'sale_id.user_id')
     def compute_self_id(self):
         for i in self:
             i.create_user = i.sale_id.user_id.id
+            # i.create_user_id = i.sale_id.user_id.id
