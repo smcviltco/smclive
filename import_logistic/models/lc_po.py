@@ -142,6 +142,7 @@ class PurchaseOrder(models.Model):
     inv_no = fields.Char('INV No')
     clearing_no = fields.Char('Clearing Agent Bill No')
     rc_count = fields.Integer()
+    new_date = fields.Date()
 
     def get_print_date(self):
         now_utc_date = datetime.now()

@@ -73,6 +73,9 @@
                             <div class="col-6" style="font-size:17px;">
                                 <strong> GD No: </strong><span class="m-0" t-field="o.gd_no"/>
                             </div>
+                            <div class="col-6" style="font-size:17px;">
+                                <strong>Date: </strong><span class="m-0" t-esc="o.new_date.strftime('%d/%m/%Y')"/>
+                            </div>
                             <!--                            <div class="col-6" style="font-size:17px;">-->
                             <!--                                <strong> Clearing Agent Bill No: </strong><span class="m-0" t-field="o.clearing_no"/>-->
                             <!--                            </div>-->
@@ -81,6 +84,7 @@
                             <div class="col-6" style="font-size:17px;">
                                 <strong>INV No: </strong><span class="m-0" t-field="o.inv_no"/>
                             </div>
+
                             <!--                            <div class="col-6">-->
                             <!--                                <span class="m-0" t-field="o.bl_no"/>-->
                             <!--                            </div>-->
