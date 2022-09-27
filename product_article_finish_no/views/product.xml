@@ -156,6 +156,10 @@
                     <field name="sqm_box" />
                     <field name="total_sqm" force_save="1" readonly="1"/>
                 </xpath>
+
+                <xpath expr="//field[@name='order_line']" position="attributes">
+                    <attribute name="attrs">{'readonly': [('state', 'in', ['sale'])]}</attribute>
+                </xpath>
             </field>
         </record>
 

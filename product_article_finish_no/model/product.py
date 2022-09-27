@@ -9,36 +9,36 @@ from odoo.osv import expression
 import re
 
 
-class paInh(models.Model):
-    _inherit = "account.payment"
-
-    available_partner_bank_ids = fields.Many2many()
+# class paInh(models.Model):
+#     _inherit = "account.payment"
 #
-# class loInh(models.Model):
-#     _inherit = "stock.location"
+#     available_partner_bank_ids = fields.Many2many()
+# #
+# # class loInh(models.Model):
+# #     _inherit = "stock.location"
+# #
+# #     is_active = fields.Boolean()
 #
-#     is_active = fields.Boolean()
-
-class Moveline(models.Model):
-    _inherit = 'account.move.line'
-
-    is_check = fields.Boolean()
+# class Moveline(models.Model):
+#     _inherit = 'account.move.line'
 #
-class SaleInh(models.Model):
-    _inherit = "sale.order"
-
-    my_activity_date_deadline = fields.Date()
-
-class AccountMoveInh(models.Model):
-    _inherit = "account.move"
-
-    my_activity_date_deadline = fields.Date()
+#     is_check = fields.Boolean()
+# #
+# class SaleInh(models.Model):
+#     _inherit = "sale.order"
 #
+#     my_activity_date_deadline = fields.Date()
 #
-class StockPickingInh(models.Model):
-    _inherit = "stock.picking"
-
-    my_activity_date_deadline = fields.Date()
+# class AccountMoveInh(models.Model):
+#     _inherit = "account.move"
+#
+#     my_activity_date_deadline = fields.Date()
+# #
+# #
+# class StockPickingInh(models.Model):
+#     _inherit = "stock.picking"
+#
+#     my_activity_date_deadline = fields.Date()
 
 
 class ProductProduct(models.Model):
@@ -138,7 +138,7 @@ class ProductTemplate(models.Model):
     free_sold_qty = fields.Float('Available Qty', compute='compute_free_sold_qty')
     value = fields.Float('Value')
 
-    my_activity_date_deadline = fields.Date()
+    # my_activity_date_deadline = fields.Date()
 
     @api.model
     def create(self, vals):
@@ -215,6 +215,8 @@ class SaleOrderLine(models.Model):
             rec.total_sqm = round(rec.product_uom_qty / (round(rec.product_id.sqm_box, 4) or 1), 4)
             rec.total_pcs = rec.total_sqm * rec.product_id.pcs_box
             sqm = rec.total_sqm - int(rec.total_sqm)
+            print((round(rec.product_id.sqm_box, 4)))
+            print(sqm)
             if sqm != 0:
                 raise UserError('Plz Add Rounded Qty')
 
@@ -223,7 +225,7 @@ class StockMoveLine(models.Model):
     _inherit = 'stock.move.line'
 
     sqm_box = fields.Float(string="SQM/Box", related='product_id.sqm_box')
-    total_sqm = fields.Float(string="Total Box")
+    total_sqm = fields.Float(string="Total Box", compute='_compute_product_uom_qty')
 
     @api.depends('product_uom_qty', 'qty_done')
     def _compute_product_uom_qty(self):
