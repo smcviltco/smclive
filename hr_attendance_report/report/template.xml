@@ -30,7 +30,7 @@
                                                 <strong>Name</strong>
                                             </th>
                                             <th style="text-align:center;border:1px solid black;">
-                                                <strong>Job Title</strong>
+                                                <strong>Shift</strong>
                                             </th>
                                             <t t-foreach="days" t-as="day">
                                                 <th style="text-align:center;border:1px solid black;">
@@ -38,6 +38,21 @@
                                                     <strong><span t-esc="day[1]"/></strong>
                                                 </th>
                                             </t>
+                                            <th style="text-align:center;border:1px solid black;">
+                                                <strong>Late In</strong>
+                                            </th>
+                                            <th style="text-align:center;border:1px solid black;">
+                                                <strong>Late Out</strong>
+                                            </th>
+                                            <th style="text-align:center;border:1px solid black;">
+                                                <strong>ST</strong>
+                                            </th>
+                                            <th style="text-align:center;border:1px solid black;">
+                                                <strong>OT</strong>
+                                            </th>
+                                            <th style="text-align:center;border:1px solid black;">
+                                                <strong>A</strong>
+                                            </th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -49,19 +64,36 @@
                                                         <td style="text-align:left;border:1px solid black;">
                                                             <t t-esc="emp.name"/>
                                                         </td>
-<!--                                                        <td style="text-align:center;border:1px solid black;">-->
-<!--                                                            <t t-esc="str(emp.shift_id.check_in)+ '-' + str(emp.shift_id.check_out)"/>-->
-<!--                                                        </td>-->
                                                         <td style="text-align:center;border:1px solid black;">
-                                                            <t t-esc="emp.job_title"/>
+<!--                                                            <t t-esc="str(emp.shift_id.check_in)+ '-' + str(emp.shift_id.check_out)"/>-->
+                                                            <t t-esc="emp.shift_id.name"/>
                                                         </td>
+
+                                                        <t t-set="reset" t-value="date_wizard.action_reset(emp)"/>
+
                                                         <t t-foreach="days" t-as="d">
                                                             <td style="text-align:center;border:1px solid black;">
                                                                 <span t-esc="date_wizard.get_attendance(d, emp)"/>
                                                             </td>
                                                         </t>
+                                                        <td style="text-align:center;border:1px solid black;">
+                                                            <t t-esc="emp.late_in"/>
+                                                        </td>
+                                                        <td style="text-align:center;border:1px solid black;">
+                                                            <t t-esc="emp.late_out"/>
+                                                        </td>
+                                                        <td style="text-align:center;border:1px solid black;">
+                                                            <t t-esc="emp.st*9"/>
+                                                        </td>
+                                                        <td style="text-align:center;border:1px solid black;">
+                                                            <t t-esc="date_wizard.get_overtime(emp)"/>
+                                                        </td>
+                                                        <td style="text-align:center;border:1px solid black;">
+                                                            <t t-esc="emp.absent"/>
+                                                        </td>
                                                     </tr>
                                                 </t>
+
                                             </t>
                                         </t>
                                     </tbody>

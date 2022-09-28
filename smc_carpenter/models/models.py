@@ -4,6 +4,12 @@ from odoo import models, fields, api
 from odoo.exceptions import UserError
 
 
+class AccountMoveLineInh(models.Model):
+    _inherit = 'account.move.line'
+
+    client_name = fields.Char()
+
+
 class AccountInh(models.Model):
     _inherit = 'account.account'
 
@@ -32,12 +38,12 @@ class CarpenterBill(models.Model):
     bill_lines = fields.One2many('carpenter.bill.line', 'bill_id')
 
     def compute_total(self):
-        total = 0
-        for line in self.bill_lines:
-            total = total + (line.quantity * line.price_unit)
+        for rec in self:
+            total = 0
+            for line in rec.bill_lines:
+                total = total + (line.quantity * line.price_unit)
 
-        self.amount_total = total
-
+            rec.amount_total = total
 
     def action_create_bill(self):
         line_vals = []
@@ -50,7 +56,8 @@ class CarpenterBill(models.Model):
                 'name': line.product_id.name,
                 'price_unit': line.price_unit,
                 'quantity': line.quantity,
-                'account_id': account.id
+                'account_id': account.id,
+                'client_name': line.partner_id.name
             }))
 
         bill = {
@@ -72,7 +79,6 @@ class CarpenterBill(models.Model):
     def action_add_lines(self):
         line_vals = []
         for invoice in self.move_ids:
-
             for line in invoice.invoice_line_ids:
                 line_vals.append((0, 0, {
                     'partner_id': invoice.partner_id.id,

@@ -124,6 +124,9 @@
                     <field name="lc_ref" readonly="1" attrs="{'invisible':['|',('s_for','=','local'),('is_tt','=',True)]}"/>
                     <field name="tt_ref" readonly="1" attrs="{'invisible':['|',('s_for','=','local'),('is_lc','=',True)]}"/>
                 </xpath>
+                <xpath expr="//field[@name='origin']" position="before">
+                    <field name="new_date" string="Date"/>
+                </xpath>
                 <xpath expr="//field[@name='currency_id']" position="after">
                     <field name="fx_rate" attrs="{'invisible':[('s_for','!=','import')],'required':[('s_for','=','import')]}"/>
                     <field name="lc_ref_no"  attrs="{'invisible':[('s_for','!=','import')]}"/>
@@ -134,6 +137,7 @@
                     <field name="inv_no" attrs="{'invisible':[('s_for','!=','import')]}"/>
                     <field name="clearing_no" attrs="{'invisible':[('s_for','!=','import')]}"/>
                     <field name="rc_count" invisible="1"/>
+
                 </xpath>
                 <xpath expr="//form/sheet/notebook/page/field[@name='order_line']/tree/field[@name='product_uom']" position="attributes">
                     <attribute name="invisible">1</attribute>

@@ -4,8 +4,8 @@ from odoo.exceptions import UserError
 
 class HRShift(models.Model):
     _name = 'hr.shift'
-    _rec_name = 'check_in'
 
+    name = fields.Char('Name')
     check_in = fields.Float('Check In')
     check_out = fields.Float('Check Out')
 

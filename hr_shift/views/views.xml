@@ -5,6 +5,7 @@
             <field name="model">hr.shift</field>
             <field name="arch" type="xml">
                 <tree>
+                    <field name="name"/>
                     <field name="check_in"/>
                     <field name="check_out"/>
                 </tree>
@@ -19,6 +20,7 @@
                 <form>
                     <sheet>
                         <group>
+                            <field name="name"/>
                             <field name="check_in" widget="float_time"/>
                             <field name="check_out" widget="float_time"/>
                         </group>

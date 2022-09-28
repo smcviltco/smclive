@@ -2,6 +2,8 @@ from odoo import models, api
 from datetime import timedelta, datetime
 from itertools import groupby
 
+from odoo.exceptions import UserError
+
 
 class EmpReport(models.AbstractModel):
     _name = 'report.hr_attendance_report.attendance_report_id_print'
@@ -19,6 +21,12 @@ class EmpReport(models.AbstractModel):
     @api.model
     def _get_report_values(self, docids, data=None):
         result = self.env['attendance.report'].browse(self.env.context.get('active_ids'))
+        # print(result.date_to-result.date_from)
+        day = result.date_to - result.date_from
+        print(day.days)
+        if day.days+1 > 30:
+            raise UserError('Date Ranges should be less than 30 days.')
+        # if result.date_from -
         # print(result.department_id.name)
         d = self.env['user.attendance'].search([])
         for x in d:
@@ -51,6 +59,6 @@ class EmpReport(models.AbstractModel):
             'employees': employees,
             'departments': data.mapped('department_id'),
             'days': up_days,
-            'cols': len(up_days)+2,
+            'cols': len(up_days)+7,
             # 'get_attendance': self.get_attendance(day),
         }
