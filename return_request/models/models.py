@@ -163,12 +163,14 @@ class ReturnRequest(models.Model):
                 line_vals.append(line_vals)
             inv = self.env['account.move'].search([('name', '=', ref)])
             order = self.env['sale.order'].search([('name', '=', sale_order)])
+            journal = self.env['account.journal'].search([('name', '=', 'Customer Invoices')])
             vals = {
                 'partner_id': self.partner_id.id,
                 'invoice_date': datetime.today().date(),
                 'move_type': 'out_refund',
                 'invoice_line_ids': line_vals,
                 'state': 'draft',
+                'journal_id': journal.id,
                 'invoice_origin': order.name,
                 'partner_shipping_id': order.partner_invoice_id.id,
                 'reversed_entry_id': inv.id,
