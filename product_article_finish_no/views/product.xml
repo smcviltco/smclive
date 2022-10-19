@@ -2,6 +2,10 @@
 <odoo>
     <data>
 
+        <record id="group_hide_value" model="res.groups">
+            <field name="name">Show Product Value</field>
+        </record>
+
         <record id="product_template_kanban_view_inherit_art" model="ir.ui.view">
             <field name="name">product.template.kanban.warehouse.quantity</field>
             <field name="model">product.template</field>
@@ -51,7 +55,7 @@
                 </xpath>
                 <xpath expr="//field[@name='qty_available']" position="after">
                     <field name="free_sold_qty" force_save="1"/>
-                    <field name="value" force_save="1" sum="Total" width="5%"/>
+                    <field name="value" force_save="1" sum="Total" width="5%" groups="product_article_finish_no.group_hide_value"/>
                     <field name="uom_id" string="UOM"/>
                 </xpath>
 
