@@ -21,7 +21,7 @@ class EmpReport(models.AbstractModel):
     def _get_report_values(self, docids, data=None):
         result = self.env['attendance.report'].browse(self.env.context.get('active_ids'))
         day = result.date_to - result.date_from
-        if day.days + 1 > 30:
+        if day.days + 1 > 31:
             raise UserError('Date Ranges should be less than 30 days.')
         d = self.env['user.attendance'].search([])
         for x in d:
