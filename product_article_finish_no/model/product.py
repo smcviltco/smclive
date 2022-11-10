@@ -225,7 +225,7 @@ class StockMoveLine(models.Model):
     _inherit = 'stock.move.line'
 
     sqm_box = fields.Float(string="SQM/Box", related='product_id.sqm_box')
-    total_sqm = fields.Float(string="Total Box")
+    total_sqm = fields.Float(string="Total Box", compute='_compute_product_uom_qty')
 
     @api.depends('product_uom_qty', 'qty_done')
     def _compute_product_uom_qty(self):
