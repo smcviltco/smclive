@@ -1,6 +1,6 @@
 import datetime
 
-from odoo import fields, models
+from odoo import fields, models, api
 from pytz import timezone
 
 
@@ -11,6 +11,13 @@ class AttendanceReport(models.TransientModel):
     word_address_id = fields.Many2one('res.partner', string='Work Address')
     date_from = fields.Date()
     date_to = fields.Date()
+    is_employee = fields.Boolean('Show Employees')
+    employee_ids = fields.Many2many('hr.employee')
+
+    @api.onchange('word_address_id')
+    def onchange_work_address(self):
+        self.is_employee = False
+        self.employee_ids = []
 
     def report_pdf_print(self):
         print("click")

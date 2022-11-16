@@ -9,6 +9,8 @@
                     <field name="date_from"/>
                     <field name="date_to"/>
                     <field name="word_address_id" domain="[('is_employee', '=', True)]" context="{'show_address': 1}" options="{'no_quick_create': True, 'no_create_edit' : True}"/>
+                    <field name="is_employee"/>
+                    <field name="employee_ids" widget="many2many_tags" attrs="{'invisible': [('is_employee','=', False)]}" domain="[('address_id', '=', word_address_id)]" options="{'no_quick_create': True, 'no_create_edit' : True}"/>
                 </group>
                 <footer>
                     <button name="report_pdf_print" string="Print PDF" class="btn-primary" type="object"/>

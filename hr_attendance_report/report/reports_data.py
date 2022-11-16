@@ -34,14 +34,17 @@ class EmpReport(models.AbstractModel):
             emp.append(rec.employee_id.id)
         emp = list(dict.fromkeys(emp))
         up_days = self.get_days(result)
-        employees = self.env['hr.employee'].search([('id', 'in', emp)])
+        if result.is_employee:
+            employees = self.env['hr.employee'].search([('id', 'in', result.employee_ids.ids)])
+        else:
+            employees = self.env['hr.employee'].search([('id', 'in', emp)])
         return {
             'doc_ids': docids,
             'doc_model': 'attendance.report',
             'date_wizard': result,
             'data': data,
             'employees': employees,
-            'departments': data.mapped('department_id'),
+            'departments': employees.mapped('department_id') if result.is_employee else data.mapped('department_id'),
             'days': up_days,
             'cols': len(up_days) + 7,
             # 'get_attendance': self.get_attendance(day),
