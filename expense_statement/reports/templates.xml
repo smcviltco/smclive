@@ -2,30 +2,37 @@
     <template id="expense_statement_rep_temp">
         <t t-call="web.html_container">
             <t t-call="web.external_layout">
-                <div class="page">
+                <div class="page" style="margin-top:-20px;">
                     <div class="oe_structure"/>
-                    <h1 class="text-center">Expense Statement Report</h1>
+                    <h2 class="text-center">Expense Statement Report</h2>
                     <h5 class="text-center"><span t-esc="data['branch_id'][1]"/></h5>
 
                     <div class="text-left">
                         <p><strong>Date: </strong><span t-esc="data['date_from']" t-options="{'widget': 'date'}"/>  <strong>- </strong><span t-esc="data['date_to']" t-options="{'widget': 'date'}"/></p>
                     </div>
 
-                    <table class="table table-sm" >
-                        <th >Date</th>
+                    <table class="table table-sm" style="border:1px solid black;">
+
+                        <th style="border:1px solid black;">Date</th>
                         <t t-foreach="accounts" t-as="account">
-                            <th class="text-center" t-esc="account.name"/>
+                            <t t-set="account_total" t-value="get_account_total(account)"/>
+                            <t t-if="account_total != 0.0">
+                                <th class="text-center" t-esc="account.secondary_name" style="border:1px solid black;"/>
+                            </t>
                         </t>
                         <t t-foreach="dates" t-as="date">
-                            <tr>
-                                <td >
+                            <tr style="border:1px solid black;">
+                                <td style="border:1px solid black;">
                                     <span t-esc="date.strftime('%d/%m/%Y')" class="text-nowrap"/>
                                 </td>
                                 <t t-foreach="accounts" t-as="account">
-                                    <t t-set="total" t-value="get_date_data(date, account)"/>
-                                    <td class="text-center">
-                                        <span t-esc="'{0:,.1f}'.format(float(total))"/>
-                                    </td>
+                                    <t t-set="account_total" t-value="get_account_total(account)"/>
+                                    <t t-if="account_total != 0.0">
+                                        <t t-set="total" t-value="get_date_data(date, account)"/>
+                                        <td class="text-center" style="border:1px solid black;">
+                                            <span t-esc="'{0:,.0f}'.format(float(total))"/>
+                                        </td>
+                                    </t>
                                 </t>
                             </tr>
                         </t>
@@ -33,9 +40,11 @@
                             <td><strong>Total</strong></td>
                             <t t-foreach="accounts" t-as="acc">
                                 <t t-set="account_total" t-value="get_account_total(acc)"/>
-                                <td class="text-center">
-                                   <strong> <span t-esc="'{0:,.1f}'.format(float(account_total))"/></strong>
-                                </td>
+                                <t t-if="account_total != 0.0">
+                                    <td class="text-center">
+                                        <strong> <span t-esc="'{0:,.0f}'.format(float(account_total))"/></strong>
+                                    </td>
+                                </t>
                             </t>
                         </tr>
                     </table>

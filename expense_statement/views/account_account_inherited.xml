@@ -1,16 +1,16 @@
 <odoo>
     <data>
 
-<!--        <record id="action_account_move_server" model="ir.actions.server">-->
-<!--            <field name="name">Assign Branches</field>-->
-<!--            <field name="model_id" ref="account.model_account_move"/>-->
-<!--            <field name="binding_model_id" ref="account.model_account_move"/>-->
-<!--            <field name="state">code</field>-->
-<!--            <field name="code">-->
-<!--                if records:-->
-<!--                action = records.action_add_branch()-->
-<!--            </field>-->
-<!--        </record>-->
+        <!--        <record id="action_account_move_server" model="ir.actions.server">-->
+        <!--            <field name="name">Assign Branches</field>-->
+        <!--            <field name="model_id" ref="account.model_account_move"/>-->
+        <!--            <field name="binding_model_id" ref="account.model_account_move"/>-->
+        <!--            <field name="state">code</field>-->
+        <!--            <field name="code">-->
+        <!--                if records:-->
+        <!--                action = records.action_add_branch()-->
+        <!--            </field>-->
+        <!--        </record>-->
 
         <record id="view_partner_tree_inh" model="ir.ui.view">
             <field name="name">res.partner.tree</field>
@@ -33,6 +33,10 @@
             <field type="xml" name="arch">
                 <xpath expr="//field[@name='tag_ids']" position="after">
                     <field name="seq_no"/>
+                </xpath>
+                <xpath expr="//field[@name='user_type_id']" position="before">
+<!--                    <label for="secondary_name"/>-->
+                    <field name="secondary_name"/>
                 </xpath>
             </field>
         </record>

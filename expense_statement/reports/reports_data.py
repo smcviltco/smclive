@@ -25,7 +25,7 @@ class ExpenseStatementReport(models.AbstractModel):
     @api.model
     def _get_report_values(self, docids, data=None):
         accounts = self.env['account.account'].search([('seq_no', '>', 0)], order='seq_no asc')
-        move_lines = self.env['account.move.line'].search([('move_id.branch_id', '=', data["form"]['branch_id'][0]), ('account_id', 'in', accounts.ids), ('date', '>=', data["form"]['date_from']), ('date', '<=', data["form"]['date_to'])])
+        move_lines = self.env['account.move.line'].search([('move_id.branch_id', '=', data["form"]['branch_id'][0]), ('account_id', 'in', accounts.ids), ('date', '>=', data["form"]['date_from']), ('date', '<=', data["form"]['date_to'])], order='date asc')
         dates = move_lines.mapped('date')
         dates = list(dict.fromkeys(dates))
         return {
