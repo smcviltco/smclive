@@ -71,17 +71,32 @@ class ReturnRequest(models.Model):
                 if rec.product_id.active == False:
                     new = self.env['product.product'].search(
                         [('system_code', '=', int(float(rec.product_id.system_code)))])
-                    vals_list.append([0, 0, {
-                        'invoice_id': self.select_invoice_id.id,
-                        'product_id': new.id,
-                    }])
+                    # vals_list.append([0, 0, {
+                    #     'invoice_id': self.select_invoice_id.id,
+                    #     'product_id': new.id,
+                    # }])
+                    if not any(_dict['product_id'] == new.id and _dict['uom_id'] == rec.product_uom_id.id for _dict in vals_list if new.id in _dict):
+                        vals_list.append({
+                            'invoice_id': self.select_invoice_id.id,
+                            'uom_id': rec.product_uom_id.id,
+                            'product_id': new.id,
+                        })
                 else:
                     # product_list.append(rec.product_id.id)
-                    vals_list.append([0, 0, {
-                        'invoice_id': self.select_invoice_id.id,
-                        'product_id': rec.product_id.id,
-                    }])
-        self.request_lines = vals_list
+                    # vals_list.append([0, 0, {
+                    #     'invoice_id': self.select_invoice_id.id,
+                    #     'product_id': rec.product_id.id,
+                    # }])
+                    if not any(_dict['product_id'] == rec.product_id.id and _dict['uom_id'] == rec.product_uom_id.id for _dict in vals_list):
+                        vals_list.append({
+                            'invoice_id': self.select_invoice_id.id,
+                            'uom_id': rec.product_uom_id.id,
+                            'product_id': rec.product_id.id,
+                        })
+        new_list = []
+        for j in vals_list:
+            new_list.append([0, 0, j])
+        self.request_lines = new_list
 
     # @api.depends('request_lines')
     def compute_check_quantity(self):
@@ -327,7 +342,7 @@ class ReturnRequested(models.Model):
     @api.onchange('product_id')
     def compute_sold_quantity(self):
         for rec in self:
-            qty = ''
+            qty = 0
             price_unit = ''
             discount = ''
             for line in rec.invoice_id.invoice_line_ids:
@@ -337,15 +352,15 @@ class ReturnRequested(models.Model):
                             [('system_code', '=', int(float(line.product_id.system_code)))])
                         if new.id == rec.product_id.id:
                             if line.product_id.uom_id.name == 'BOX':
-                                qty = line.quantity * rec.product_id.sqm_box
+                                qty = qty + line.quantity * rec.product_id.sqm_box
                                 price_unit = line.price_unit / rec.product_id.sqm_box
                             else:
-                                qty = line.quantity
+                                qty = qty + line.quantity
                                 price_unit = line.price_unit
                             discount = line.discount
                     else:
                         if line.product_id.id == rec.product_id.id:
-                            qty = line.quantity
+                            qty = qty+ line.quantity
                             price_unit = line.price_unit
                             discount = line.discount
             rec.sold_quantity = qty
