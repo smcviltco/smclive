@@ -20,6 +20,9 @@
                                 <th class="text-center" t-esc="account.secondary_name" style="border:1px solid black;"/>
                             </t>
                         </t>
+                        <th style="border:1px solid black;">F-P</th>
+                        <th style="border:1px solid black;">Bank</th>
+                        <th style="border:1px solid black;">SM</th>
                         <t t-foreach="dates" t-as="date">
                             <tr style="border:1px solid black;">
                                 <td style="border:1px solid black;">
@@ -34,6 +37,18 @@
                                         </td>
                                     </t>
                                 </t>
+                                <t t-set="fp_account_total" t-value="get_fp_account_total(date)"/>
+                                <td style="border:1px solid black;">
+                                    <span t-esc="'{0:,.0f}'.format(float(fp_account_total))"/>
+                                </td>
+                                <t t-set="bank_account_total" t-value="get_bank_account_total(date)"/>
+                                <td style="border:1px solid black;">
+                                    <span t-esc="'{0:,.0f}'.format(float(bank_account_total))"/>
+                                </td>
+                                <t t-set="sm_account_total" t-value="get_sm_account_total(date)"/>
+                                <td style="border:1px solid black;">
+                                    <span t-esc="'{0:,.0f}'.format(float(sm_account_total))"/>
+                                </td>
                             </tr>
                         </t>
                         <tr>

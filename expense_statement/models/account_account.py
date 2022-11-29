@@ -11,11 +11,20 @@ class AccountMoveInherited(models.Model):
                 rec.branch_id = rec.move_id.branch_id.id
 
 
+# class AccountJournalInherited(models.Model):
+#     _inherit = 'account.journal'
+#
+#     is_fp = fields.Boolean()
+
+
 class AccountAccountInherited(models.Model):
     _inherit = 'account.account'
 
     seq_no = fields.Integer('Sequence No')
     secondary_name = fields.Char()
+    is_fp = fields.Boolean()
+    is_bank = fields.Boolean()
+    is_sm = fields.Boolean()
 
     @api.constrains('seq_no')
     def check_code(self):

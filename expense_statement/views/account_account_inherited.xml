@@ -35,11 +35,27 @@
                     <field name="seq_no"/>
                 </xpath>
                 <xpath expr="//field[@name='user_type_id']" position="before">
-<!--                    <label for="secondary_name"/>-->
+                    <!--                    <label for="secondary_name"/>-->
                     <field name="secondary_name"/>
+                </xpath>
+                <xpath expr="//field[@name='group_id']" position="after">
+                    <field name="is_fp"/>
+                    <field name="is_bank"/>
+                    <field name="is_sm"/>
                 </xpath>
             </field>
         </record>
+
+        <!--        <record id="view_account_journal_form_inherited" model="ir.ui.view">-->
+        <!--            <field name="name">account.journal.form.inherited</field>-->
+        <!--            <field name="inherit_id" ref="account.view_account_journal_form"/>-->
+        <!--            <field name="model">account.journal</field>-->
+        <!--            <field type="xml" name="arch">-->
+        <!--                <xpath expr="//field[@name='type']" position="after">-->
+        <!--                    <field name="is_fp"/>-->
+        <!--                </xpath>-->
+        <!--            </field>-->
+        <!--        </record>-->
 
     </data>
 </odoo>
