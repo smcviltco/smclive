@@ -46,16 +46,28 @@
             </field>
         </record>
 
-        <!--        <record id="view_account_journal_form_inherited" model="ir.ui.view">-->
-        <!--            <field name="name">account.journal.form.inherited</field>-->
-        <!--            <field name="inherit_id" ref="account.view_account_journal_form"/>-->
-        <!--            <field name="model">account.journal</field>-->
-        <!--            <field type="xml" name="arch">-->
-        <!--                <xpath expr="//field[@name='type']" position="after">-->
-        <!--                    <field name="is_fp"/>-->
-        <!--                </xpath>-->
-        <!--            </field>-->
-        <!--        </record>-->
+        <record id="view_account_move_form_inherited" model="ir.ui.view">
+            <field name="name">account.move.form.inherited</field>
+            <field name="inherit_id" ref="account.view_move_form"/>
+            <field name="model">account.move</field>
+            <field type="xml" name="arch">
+                <xpath expr="//field[@name='ref']" position="after">
+                    <field name="is_inter_branch_transfer"/>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="view_account_payment_form_inh" model="ir.ui.view">
+            <field name="name">account.payment.form</field>
+            <field name="model">account.payment</field>
+            <field name="inherit_id" ref="account.view_account_payment_form"/>
+            <field name="arch" type="xml">
+
+                <xpath expr="//field[@name='move_id']" position="before">
+                    <field name="is_sale_return"/>
+                </xpath>
+            </field>
+        </record>
 
     </data>
 </odoo>

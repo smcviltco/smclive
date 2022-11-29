@@ -54,16 +54,16 @@ class ExpenseStatementReport(models.AbstractModel):
         docs = self.env[model].browse(self.env.context.get('active_id'))
         fb_accounts = self.env['account.account'].search(['|', ('is_bank', '=', True), ('is_sm', '=', True)])
         tot = sum(self.env['account.move.line'].search(
-            [('account_id', 'in', fb_accounts.ids), ('branch_id', '=', docs.branch_id.id),
+            [('account_id', 'in', fb_accounts.ids), ('branch_id', '=', docs.branch_id.id),('move_id.is_inter_branch_transfer', '=', False),
              ('date', '=', date)]).mapped('debit'))
         return tot
 
     def get_total_sale_return(self, date):
         model = self.env.context.get('active_model')
         docs = self.env[model].browse(self.env.context.get('active_id'))
-        fb_accounts = self.env['account.account'].search(['|',('is_bank', '=', True), ('is_sm', '=', True)])
+        fb_accounts = self.env['account.account'].search(['|', ('is_bank', '=', True), ('is_sm', '=', True)])
         tot = sum(self.env['account.move.line'].search(
-            [('account_id', 'in', fb_accounts.ids), ('branch_id', '=', docs.branch_id.id),
+            [('account_id', 'in', fb_accounts.ids), ('branch_id', '=', docs.branch_id.id),('payment_id.is_sale_return', '=', True),
              ('date', '=', date)]).mapped('credit'))
         return tot
 
@@ -71,19 +71,15 @@ class ExpenseStatementReport(models.AbstractModel):
         model = self.env.context.get('active_model')
         docs = self.env[model].browse(self.env.context.get('active_id'))
         partners = self.env['res.partner'].search([('partner_type', '=', 'local_vendor')])
-        # print(partners)
-        fb_accounts = self.env['account.account'].search(['|',('is_bank', '=', True), ('is_sm', '=', True)])
-        # print(fb_accounts)
+        fb_accounts = self.env['account.account'].search(['|', ('is_bank', '=', True), ('is_sm', '=', True)])
         tot = sum(self.env['account.move.line'].search(
             [('account_id', 'in', fb_accounts.ids), ('partner_id', 'in', partners.ids),('branch_id', '=', docs.branch_id.id),
              ('date', '=', date)]).mapped('credit'))
-        # print(tot)
         return tot
 
     @api.model
     def _get_report_values(self, docids, data=None):
         accounts = self.env['account.account'].search([('seq_no', '>', 0), ('is_fp', '=', False)], order='seq_no asc')
-        # fb_accounts = self.env['account.account'].search([('seq_no', '>', 0), ('is_fp', '=', True)], order='seq_no asc')
         move_lines = self.env['account.move.line'].search([('move_id.branch_id', '=', data["form"]['branch_id'][0]), ('account_id', 'in', accounts.ids), ('date', '>=', data["form"]['date_from']), ('date', '<=', data["form"]['date_to'])], order='date asc')
         dates = move_lines.mapped('date')
         dates = list(dict.fromkeys(dates))

@@ -5,16 +5,19 @@ from odoo.exceptions import UserError
 class AccountMoveInherited(models.Model):
     _inherit = 'account.move'
 
+    is_inter_branch_transfer = fields.Boolean()
+
     def action_add_branch(self):
         moves = self.env['account.move.line'].search([('branch_id', '=', False)])
         for rec in moves:
                 rec.branch_id = rec.move_id.branch_id.id
 
 
-# class AccountJournalInherited(models.Model):
-#     _inherit = 'account.journal'
-#
-#     is_fp = fields.Boolean()
+class AccountPaymentInherited(models.Model):
+    _inherit = 'account.payment'
+
+    is_sale_return = fields.Boolean()
+    # available_partner_bank_ids = fields.Many2many('res.bank')
 
 
 class AccountAccountInherited(models.Model):
