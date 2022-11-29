@@ -4,12 +4,57 @@
             <t t-call="web.external_layout">
                 <div class="page" style="margin-top:-20px;">
                     <div class="oe_structure"/>
-                    <h2 class="text-center">Expense Statement Report</h2>
+                    <h2 class="text-center">Sale Statement</h2>
+
                     <h5 class="text-center"><span t-esc="data['branch_id'][1]"/></h5>
 
                     <div class="text-left">
                         <p><strong>Date: </strong><span t-esc="data['date_from']" t-options="{'widget': 'date'}"/>  <strong>- </strong><span t-esc="data['date_to']" t-options="{'widget': 'date'}"/></p>
                     </div>
+
+                    <table class="table table-sm" style="border:1px solid black;">
+
+                        <th style="border:1px solid black;">Date</th>
+                        <th style="border:1px solid black;">Total Sale</th>
+                        <th style="border:1px solid black;">Total Return</th>
+                        <th style="border:1px solid black;">Total Purchase</th>
+                        <t t-set="grand_total_sale" t-value="0"/>
+                        <t t-set="grand_total_sale_return" t-value="0"/>
+                        <t t-set="grand_total_purchases" t-value="0"/>
+                        <t t-foreach="dates" t-as="date">
+                            <tr style="border:1px solid black;">
+                                <td style="border:1px solid black;">
+                                    <span t-esc="date.strftime('%d/%m/%Y')" class="text-nowrap"/>
+                                </td>
+                                <t t-set="total_sale" t-value="get_total_sale(date)"/>
+                                <td style="border:1px solid black;">
+                                    <span t-esc="'{0:,.0f}'.format(float(total_sale))"/>
+                                </td>
+                                <t t-set="grand_total_sale" t-value="grand_total_sale + float(total_sale)"/>
+                                <t t-set="total_sale_return" t-value="get_total_sale_return(date)"/>
+                                <td style="border:1px solid black;">
+                                    <span t-esc="'{0:,.0f}'.format(float(total_sale_return))"/>
+                                </td>
+                                <t t-set="grand_total_sale_return" t-value="grand_total_sale_return + float(total_sale_return)"/>
+
+                                <t t-set="total_purchases" t-value="get_total_purchases(date)"/>
+                                <td style="border:1px solid black;">
+                                    <span t-esc="'{0:,.0f}'.format(float(total_purchases))"/>
+                                </td>
+                                <t t-set="grand_total_purchases" t-value="grand_total_purchases + float(total_purchases)"/>
+                            </tr>
+                        </t>
+                        <tr>
+                            <td><strong>Total</strong></td>
+                            <td><strong> <span t-esc="'{0:,.0f}'.format(float(grand_total_sale))"/></strong></td>
+                            <td><strong> <span t-esc="'{0:,.0f}'.format(float(grand_total_sale_return))"/></strong></td>
+                            <td><strong> <span t-esc="'{0:,.0f}'.format(float(grand_total_purchases))"/></strong></td>
+                        </tr>
+                    </table>
+                    <br/>
+
+                    <h2 class="text-center">Expense Statement</h2>
+
 
                     <table class="table table-sm" style="border:1px solid black;">
 
@@ -23,6 +68,11 @@
                         <th style="border:1px solid black;">F-P</th>
                         <th style="border:1px solid black;">Bank</th>
                         <th style="border:1px solid black;">SM</th>
+
+                        <t t-set="grand_total_fp" t-value="0"/>
+                        <t t-set="grand_total_bank" t-value="0"/>
+                        <t t-set="grand_total_sm" t-value="0"/>
+
                         <t t-foreach="dates" t-as="date">
                             <tr style="border:1px solid black;">
                                 <td style="border:1px solid black;">
@@ -49,6 +99,10 @@
                                 <td style="border:1px solid black;">
                                     <span t-esc="'{0:,.0f}'.format(float(sm_account_total))"/>
                                 </td>
+
+                                <t t-set="grand_total_fp" t-value="grand_total_fp + fp_account_total"/>
+                                <t t-set="grand_total_bank" t-value="grand_total_bank + bank_account_total"/>
+                                <t t-set="grand_total_sm" t-value="grand_total_sm + sm_account_total"/>
                             </tr>
                         </t>
                         <tr>
@@ -61,6 +115,9 @@
                                     </td>
                                 </t>
                             </t>
+                            <td><strong> <span t-esc="'{0:,.0f}'.format(float(grand_total_fp))"/></strong></td>
+                            <td><strong> <span t-esc="'{0:,.0f}'.format(float(grand_total_bank))"/></strong></td>
+                            <td><strong> <span t-esc="'{0:,.0f}'.format(float(grand_total_sm))"/></strong></td>
                         </tr>
                     </table>
                 </div>

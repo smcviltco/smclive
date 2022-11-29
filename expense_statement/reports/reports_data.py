@@ -26,32 +26,57 @@ class ExpenseStatementReport(models.AbstractModel):
         model = self.env.context.get('active_model')
         docs = self.env[model].browse(self.env.context.get('active_id'))
         fb_accounts = self.env['account.account'].search([('is_fp', '=', True)])
-        print(fb_accounts)
         tot = sum(self.env['account.move.line'].search(
             [('account_id', 'in', fb_accounts.ids), ('move_id.branch_id', '=', docs.branch_id.id),
              ('date', '=', date)]).mapped('debit'))
-        print(tot)
         return tot
 
     def get_bank_account_total(self, date):
         model = self.env.context.get('active_model')
         docs = self.env[model].browse(self.env.context.get('active_id'))
         fb_accounts = self.env['account.account'].search([('is_bank', '=', True)])
-        print(fb_accounts)
         tot = sum(self.env['account.move.line'].search(
             [('account_id', 'in', fb_accounts.ids), ('move_id.branch_id', '=', docs.branch_id.id),
              ('date', '=', date)]).mapped('debit'))
-        print(tot)
         return tot
 
     def get_sm_account_total(self, date):
         model = self.env.context.get('active_model')
         docs = self.env[model].browse(self.env.context.get('active_id'))
         fb_accounts = self.env['account.account'].search([('is_bank', '=', True)])
-        print(fb_accounts)
         tot = sum(self.env['account.move.line'].search(
             [('account_id', 'in', fb_accounts.ids), ('move_id.branch_id', '=', docs.branch_id.id),
              ('date', '=', date)]).mapped('debit'))
+        return tot
+
+    def get_total_sale(self, date):
+        model = self.env.context.get('active_model')
+        docs = self.env[model].browse(self.env.context.get('active_id'))
+        fb_accounts = self.env['account.account'].search([('is_bank', '=', True), ('is_sm', '=', True)])
+        tot = sum(self.env['account.move.line'].search(
+            [('account_id', 'in', fb_accounts.ids), ('move_id.branch_id', '=', docs.branch_id.id),
+             ('date', '=', date)]).mapped('debit'))
+        return tot
+
+    def get_total_sale_return(self, date):
+        model = self.env.context.get('active_model')
+        docs = self.env[model].browse(self.env.context.get('active_id'))
+        fb_accounts = self.env['account.account'].search([('is_bank', '=', True), ('is_sm', '=', True)])
+        tot = sum(self.env['account.move.line'].search(
+            [('account_id', 'in', fb_accounts.ids), ('move_id.branch_id', '=', docs.branch_id.id),
+             ('date', '=', date)]).mapped('credit'))
+        return tot
+
+    def get_total_purchases(self, date):
+        model = self.env.context.get('active_model')
+        docs = self.env[model].browse(self.env.context.get('active_id'))
+        partners = self.env['res.partner'].search([('partner_type', '=', 'local_vendor')])
+        print(partners)
+        fb_accounts = self.env['account.account'].search([('is_bank', '=', True), ('is_sm', '=', True)])
+        print(fb_accounts)
+        tot = sum(self.env['account.move.line'].search(
+            [('account_id', 'in', fb_accounts.ids), ('partner_id', 'in', partners.ids),('move_id.branch_id', '=', docs.branch_id.id),
+             ('date', '=', date)]).mapped('credit'))
         print(tot)
         return tot
 
@@ -74,4 +99,7 @@ class ExpenseStatementReport(models.AbstractModel):
             'get_fp_account_total': self.get_fp_account_total,
             'get_bank_account_total': self.get_bank_account_total,
             'get_sm_account_total': self.get_sm_account_total,
+            'get_total_sale': self.get_total_sale,
+            'get_total_sale_return': self.get_total_sale_return,
+            'get_total_purchases': self.get_total_purchases,
         }
