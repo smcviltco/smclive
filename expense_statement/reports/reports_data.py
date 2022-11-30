@@ -10,7 +10,7 @@ class ExpenseStatementReport(models.AbstractModel):
         model = self.env.context.get('active_model')
         docs = self.env[model].browse(self.env.context.get('active_id'))
         tot = sum(self.env['account.move.line'].search(
-            [('account_id', '=', account.id), ('branch_id', '=', docs.branch_id.id),
+            [('account_id', '=', account.id), ('move_id.branch_id', '=', docs.branch_id.id),
              ('date', '=', date)]).mapped('debit'))
         return tot
 
@@ -18,7 +18,7 @@ class ExpenseStatementReport(models.AbstractModel):
         model = self.env.context.get('active_model')
         docs = self.env[model].browse(self.env.context.get('active_id'))
         tot = sum(self.env['account.move.line'].search(
-            [('account_id', '=', account.id), ('branch_id', '=', docs.branch_id.id),
+            [('account_id', '=', account.id), ('move_id.branch_id', '=', docs.branch_id.id),
              ('date', '>=', docs.date_from), ('date', '<=', docs.date_to)]).mapped('debit'))
         return tot
 
@@ -80,9 +80,11 @@ class ExpenseStatementReport(models.AbstractModel):
     @api.model
     def _get_report_values(self, docids, data=None):
         accounts = self.env['account.account'].search([('seq_no', '>', 0)], order='seq_no asc')
+        print(accounts)
         move_lines = self.env['account.move.line'].search([('move_id.branch_id', '=', data["form"]['branch_id'][0]), ('account_id', 'in', accounts.ids), ('date', '>=', data["form"]['date_from']), ('date', '<=', data["form"]['date_to'])], order='date asc')
         dates = move_lines.mapped('date')
         dates = list(dict.fromkeys(dates))
+        print(dates)
         return {
             'doc_ids': docids,
             'doc_model': 'menu.report1',
