@@ -10,7 +10,7 @@ class ExpenseStatementReport(models.AbstractModel):
         model = self.env.context.get('active_model')
         docs = self.env[model].browse(self.env.context.get('active_id'))
         tot = sum(self.env['account.move.line'].search(
-            [('account_id', '=', account.id), ('move_id.branch_id', '=', docs.branch_id.id),
+            [('account_id', '=', account.id),('move_id.state', '=', 'posted'), ('move_id.branch_id', '=', docs.branch_id.id),
              ('date', '=', date)]).mapped('debit'))
         return tot
 
@@ -19,7 +19,7 @@ class ExpenseStatementReport(models.AbstractModel):
         docs = self.env[model].browse(self.env.context.get('active_id'))
         tot = sum(self.env['account.move.line'].search(
             [('account_id', '=', account.id), ('move_id.branch_id', '=', docs.branch_id.id),
-             ('date', '>=', docs.date_from), ('date', '<=', docs.date_to)]).mapped('debit'))
+             ('date', '>=', docs.date_from),('move_id.state', '=', 'posted'), ('date', '<=', docs.date_to)]).mapped('debit'))
         return tot
 
     def get_fp_account_total(self, date):
@@ -27,7 +27,7 @@ class ExpenseStatementReport(models.AbstractModel):
         docs = self.env[model].browse(self.env.context.get('active_id'))
         fb_accounts = self.env['account.account'].search([('is_fp', '=', True)])
         tot = sum(self.env['account.move.line'].search(
-            [('account_id', 'in', fb_accounts.ids), ('branch_id', '=', docs.branch_id.id),
+            [('account_id', 'in', fb_accounts.ids),('move_id.state', '=', 'posted'), ('branch_id', '=', docs.branch_id.id),
              ('date', '=', date)]).mapped('debit'))
         return tot
 
@@ -36,7 +36,7 @@ class ExpenseStatementReport(models.AbstractModel):
         docs = self.env[model].browse(self.env.context.get('active_id'))
         fb_accounts = self.env['account.account'].search([('is_bank', '=', True)])
         tot = sum(self.env['account.move.line'].search(
-            [('account_id', 'in', fb_accounts.ids), ('branch_id', '=', docs.branch_id.id),
+            [('account_id', 'in', fb_accounts.ids),('move_id.state', '=', 'posted'), ('branch_id', '=', docs.branch_id.id),
              ('date', '=', date)]).mapped('debit'))
         return tot
 
@@ -45,7 +45,7 @@ class ExpenseStatementReport(models.AbstractModel):
         docs = self.env[model].browse(self.env.context.get('active_id'))
         fb_accounts = self.env['account.account'].search([('is_bank', '=', True)])
         tot = sum(self.env['account.move.line'].search(
-            [('account_id', 'in', fb_accounts.ids), ('branch_id', '=', docs.branch_id.id),
+            [('account_id', 'in', fb_accounts.ids), ('move_id.state', '=', 'posted'),('branch_id', '=', docs.branch_id.id),
              ('date', '=', date)]).mapped('debit'))
         return tot
 
@@ -54,7 +54,7 @@ class ExpenseStatementReport(models.AbstractModel):
         docs = self.env[model].browse(self.env.context.get('active_id'))
         fb_accounts = self.env['account.account'].search(['|', ('is_bank', '=', True), ('is_sm', '=', True)])
         tot = sum(self.env['account.move.line'].search(
-            [('account_id', 'in', fb_accounts.ids), ('branch_id', '=', docs.branch_id.id),('move_id.is_inter_branch_transfer', '=', False),
+            [('account_id', 'in', fb_accounts.ids),('move_id.state', '=', 'posted'), ('branch_id', '=', docs.branch_id.id),('move_id.is_inter_branch_transfer', '=', False),
              ('date', '=', date)]).mapped('debit'))
         return tot
 
@@ -63,7 +63,7 @@ class ExpenseStatementReport(models.AbstractModel):
         docs = self.env[model].browse(self.env.context.get('active_id'))
         fb_accounts = self.env['account.account'].search(['|', ('is_bank', '=', True), ('is_sm', '=', True)])
         tot = sum(self.env['account.move.line'].search(
-            [('account_id', 'in', fb_accounts.ids), ('branch_id', '=', docs.branch_id.id),('payment_id.is_sale_return', '=', True),
+            [('account_id', 'in', fb_accounts.ids), ('move_id.state', '=', 'posted'),('branch_id', '=', docs.branch_id.id),('payment_id.is_sale_return', '=', True),
              ('date', '=', date)]).mapped('credit'))
         return tot
 
@@ -73,7 +73,7 @@ class ExpenseStatementReport(models.AbstractModel):
         partners = self.env['res.partner'].search([('partner_type', '=', 'local_vendor')])
         fb_accounts = self.env['account.account'].search(['|', ('is_bank', '=', True), ('is_sm', '=', True)])
         tot = sum(self.env['account.move.line'].search(
-            [('account_id', 'in', fb_accounts.ids), ('partner_id', 'in', partners.ids),('branch_id', '=', docs.branch_id.id),
+            [('account_id', 'in', fb_accounts.ids),('move_id.state', '=', 'posted'), ('partner_id', 'in', partners.ids),('branch_id', '=', docs.branch_id.id),
              ('date', '=', date)]).mapped('credit'))
         return tot
 
@@ -81,7 +81,7 @@ class ExpenseStatementReport(models.AbstractModel):
     def _get_report_values(self, docids, data=None):
         accounts = self.env['account.account'].search([('seq_no', '>', 0)], order='seq_no asc')
         print(accounts)
-        move_lines = self.env['account.move.line'].search([('move_id.branch_id', '=', data["form"]['branch_id'][0]), ('account_id', 'in', accounts.ids), ('date', '>=', data["form"]['date_from']), ('date', '<=', data["form"]['date_to'])], order='date asc')
+        move_lines = self.env['account.move.line'].search([('move_id.branch_id', '=', data["form"]['branch_id'][0]), ('account_id', 'in', accounts.ids), ('move_id.state', '=', 'posted'),('date', '>=', data["form"]['date_from']), ('date', '<=', data["form"]['date_to'])], order='date asc')
         dates = move_lines.mapped('date')
         dates = list(dict.fromkeys(dates))
         print(dates)

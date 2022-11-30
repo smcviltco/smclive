@@ -51,7 +51,7 @@
                             <td><strong> <span t-esc="'{0:,.0f}'.format(float(grand_total_purchases))"/></strong></td>
                         </tr>
                     </table>
-<!--                    <br/>-->
+                    <!--                    <br/>-->
                     <p style="page-break-after: always;"/>
 
                     <h2 class="text-center">Expense Statement</h2>
@@ -71,15 +71,18 @@
                                 <th class="text-center" t-esc="account.secondary_name" style="border:1px solid black;"/>
                             </t>
                         </t>
-                        <th style="border:1px solid black;">F-P</th>
-                        <th style="border:1px solid black;">Bank</th>
-                        <th style="border:1px solid black;">SM</th>
+                        <!--                        <th style="border:1px solid black;">F-P</th>-->
+                        <!--                        <th style="border:1px solid black;">Bank</th>-->
+                        <!--                        <th style="border:1px solid black;">SM</th>-->
+                        <th style="border:1px solid black;">Total</th>
 
-                        <t t-set="grand_total_fp" t-value="0"/>
-                        <t t-set="grand_total_bank" t-value="0"/>
-                        <t t-set="grand_total_sm" t-value="0"/>
+                        <t t-set="grand_total" t-value="0"/>
+<!--                        <t t-set="grand_total_fp" t-value="0"/>-->
+<!--                        <t t-set="grand_total_bank" t-value="0"/>-->
+<!--                        <t t-set="grand_total_sm" t-value="0"/>-->
 
                         <t t-foreach="dates" t-as="date">
+                            <t t-set="grand_total_date" t-value="0"/>
                             <tr style="border:1px solid black;">
                                 <td style="border:1px solid black;">
                                     <span t-esc="date.strftime('%d/%m/%Y')" class="text-nowrap"/>
@@ -87,28 +90,39 @@
                                 <t t-foreach="accounts" t-as="account">
                                     <t t-set="account_total" t-value="get_account_total(account)"/>
                                     <t t-if="account_total != 0.0">
+
                                         <t t-set="total" t-value="get_date_data(date, account)"/>
+
+                                        <t t-set="grand_total_date" t-value="grand_total_date + total"/>
+                                        <t t-set="grand_total" t-value="grand_total + grand_total_date"/>
+
                                         <td class="text-center" style="border:1px solid black;">
                                             <span t-esc="'{0:,.0f}'.format(float(total))"/>
                                         </td>
                                     </t>
-                                </t>
-                                <t t-set="fp_account_total" t-value="get_fp_account_total(date)"/>
-                                <td style="border:1px solid black;">
-                                    <span t-esc="'{0:,.0f}'.format(float(fp_account_total))"/>
-                                </td>
-                                <t t-set="bank_account_total" t-value="get_bank_account_total(date)"/>
-                                <td style="border:1px solid black;">
-                                    <span t-esc="'{0:,.0f}'.format(float(bank_account_total))"/>
-                                </td>
-                                <t t-set="sm_account_total" t-value="get_sm_account_total(date)"/>
-                                <td style="border:1px solid black;">
-                                    <span t-esc="'{0:,.0f}'.format(float(sm_account_total))"/>
-                                </td>
 
-                                <t t-set="grand_total_fp" t-value="grand_total_fp + fp_account_total"/>
-                                <t t-set="grand_total_bank" t-value="grand_total_bank + bank_account_total"/>
-                                <t t-set="grand_total_sm" t-value="grand_total_sm + sm_account_total"/>
+
+
+                                </t>
+                                 <td class="text-center" style="border:1px solid black;">
+                                        <span t-esc="'{0:,.0f}'.format(grand_total_date)"/>
+                                    </td>
+                                <!--                                <t t-set="fp_account_total" t-value="get_fp_account_total(date)"/>-->
+                                <!--                                <td style="border:1px solid black;">-->
+                                <!--                                    <span t-esc="'{0:,.0f}'.format(float(fp_account_total))"/>-->
+                                <!--                                </td>-->
+                                <!--                                <t t-set="bank_account_total" t-value="get_bank_account_total(date)"/>-->
+                                <!--                                <td style="border:1px solid black;">-->
+                                <!--                                    <span t-esc="'{0:,.0f}'.format(float(bank_account_total))"/>-->
+                                <!--                                </td>-->
+                                <!--                                <t t-set="sm_account_total" t-value="get_sm_account_total(date)"/>-->
+                                <!--                                <td style="border:1px solid black;">-->
+                                <!--                                    <span t-esc="'{0:,.0f}'.format(float(sm_account_total))"/>-->
+                                <!--                                </td>-->
+
+                                <!--                                <t t-set="grand_total_fp" t-value="grand_total_fp + fp_account_total"/>-->
+                                <!--                                <t t-set="grand_total_bank" t-value="grand_total_bank + bank_account_total"/>-->
+                                <!--                                <t t-set="grand_total_sm" t-value="grand_total_sm + sm_account_total"/>-->
                             </tr>
                         </t>
                         <tr>
@@ -121,9 +135,10 @@
                                     </td>
                                 </t>
                             </t>
-                            <td><strong> <span t-esc="'{0:,.0f}'.format(float(grand_total_fp))"/></strong></td>
-                            <td><strong> <span t-esc="'{0:,.0f}'.format(float(grand_total_bank))"/></strong></td>
-                            <td><strong> <span t-esc="'{0:,.0f}'.format(float(grand_total_sm))"/></strong></td>
+                            <td><strong> <span t-esc="'{0:,.0f}'.format(float(grand_total))"/></strong></td>
+<!--                            <td><strong> <span t-esc="'{0:,.0f}'.format(float(grand_total_fp))"/></strong></td>-->
+<!--                            <td><strong> <span t-esc="'{0:,.0f}'.format(float(grand_total_bank))"/></strong></td>-->
+<!--                            <td><strong> <span t-esc="'{0:,.0f}'.format(float(grand_total_sm))"/></strong></td>-->
                         </tr>
                     </table>
                 </div>
