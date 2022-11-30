@@ -1,6 +1,6 @@
 from odoo import models, api, fields
 from odoo.exceptions import UserError
-
+import datetime
 
 class ExpenseStatementReport(models.AbstractModel):
     _name = 'report.expense_statement.expense_statement_rep_temp'
@@ -77,14 +77,28 @@ class ExpenseStatementReport(models.AbstractModel):
              ('date', '=', date)]).mapped('credit'))
         return tot
 
+    def workdays(self, d, end):
+        days = []
+        excluded = [7]
+        while d <= end:
+            if d.isoweekday() not in excluded:
+                days.append(d)
+            d += datetime.timedelta(days=1)
+        return days
+
+    def get_working_days(self):
+        model = self.env.context.get('active_model')
+        docs = self.env[model].browse(self.env.context.get('active_id'))
+        days = self.workdays(docs.date_from, docs.date_to)
+        print(len(days))
+        return len(days)
+
     @api.model
     def _get_report_values(self, docids, data=None):
         accounts = self.env['account.account'].search([('seq_no', '>', 0)], order='seq_no asc')
-        print(accounts)
         move_lines = self.env['account.move.line'].search([('move_id.branch_id', '=', data["form"]['branch_id'][0]), ('account_id', 'in', accounts.ids), ('move_id.state', '=', 'posted'),('date', '>=', data["form"]['date_from']), ('date', '<=', data["form"]['date_to'])], order='date asc')
         dates = move_lines.mapped('date')
         dates = list(dict.fromkeys(dates))
-        print(dates)
         return {
             'doc_ids': docids,
             'doc_model': 'menu.report1',
@@ -100,4 +114,5 @@ class ExpenseStatementReport(models.AbstractModel):
             'get_total_sale': self.get_total_sale,
             'get_total_sale_return': self.get_total_sale_return,
             'get_total_purchases': self.get_total_purchases,
+            'get_working_days': self.get_working_days,
         }

@@ -11,6 +11,9 @@
                     <div class="text-left">
                         <p><strong>Date: </strong><span t-esc="data['date_from']" t-options="{'widget': 'date'}"/>  <strong>- </strong><span t-esc="data['date_to']" t-options="{'widget': 'date'}"/></p>
                     </div>
+                    <t t-set="grand_total_sale" t-value="0"/>
+                    <t t-set="grand_total_sale_return" t-value="0"/>
+                    <t t-set="grand_total_purchases" t-value="0"/>
 
                     <table class="table table-sm" style="border:1px solid black;">
 
@@ -18,9 +21,7 @@
                         <th style="border:1px solid black;">Total Sale</th>
                         <th style="border:1px solid black;">Total Return</th>
                         <th style="border:1px solid black;">Total Purchase</th>
-                        <t t-set="grand_total_sale" t-value="0"/>
-                        <t t-set="grand_total_sale_return" t-value="0"/>
-                        <t t-set="grand_total_purchases" t-value="0"/>
+
                         <t t-foreach="dates" t-as="date">
                             <tr style="border:1px solid black;">
                                 <td style="border:1px solid black;">
@@ -60,6 +61,7 @@
                     <div class="text-left">
                         <p><strong>Date: </strong><span t-esc="data['date_from']" t-options="{'widget': 'date'}"/>  <strong>- </strong><span t-esc="data['date_to']" t-options="{'widget': 'date'}"/></p>
                     </div>
+                    <t t-set="grand_total" t-value="0"/>
 
 
                     <table class="table table-sm" style="border:1px solid black;">
@@ -76,10 +78,10 @@
                         <!--                        <th style="border:1px solid black;">SM</th>-->
                         <th style="border:1px solid black;">Total</th>
 
-                        <t t-set="grand_total" t-value="0"/>
-<!--                        <t t-set="grand_total_fp" t-value="0"/>-->
-<!--                        <t t-set="grand_total_bank" t-value="0"/>-->
-<!--                        <t t-set="grand_total_sm" t-value="0"/>-->
+
+                        <!--                        <t t-set="grand_total_fp" t-value="0"/>-->
+                        <!--                        <t t-set="grand_total_bank" t-value="0"/>-->
+                        <!--                        <t t-set="grand_total_sm" t-value="0"/>-->
 
                         <t t-foreach="dates" t-as="date">
                             <t t-set="grand_total_date" t-value="0"/>
@@ -94,19 +96,16 @@
                                         <t t-set="total" t-value="get_date_data(date, account)"/>
 
                                         <t t-set="grand_total_date" t-value="grand_total_date + total"/>
-                                        <t t-set="grand_total" t-value="grand_total + grand_total_date"/>
+                                        <t t-set="grand_total" t-value="grand_total + total"/>
 
                                         <td class="text-center" style="border:1px solid black;">
                                             <span t-esc="'{0:,.0f}'.format(float(total))"/>
                                         </td>
                                     </t>
-
-
-
                                 </t>
-                                 <td class="text-center" style="border:1px solid black;">
-                                        <span t-esc="'{0:,.0f}'.format(grand_total_date)"/>
-                                    </td>
+                                <td class="text-center" style="border:1px solid black;">
+                                    <span t-esc="'{0:,.0f}'.format(grand_total_date)"/>
+                                </td>
                                 <!--                                <t t-set="fp_account_total" t-value="get_fp_account_total(date)"/>-->
                                 <!--                                <td style="border:1px solid black;">-->
                                 <!--                                    <span t-esc="'{0:,.0f}'.format(float(fp_account_total))"/>-->
@@ -136,11 +135,122 @@
                                 </t>
                             </t>
                             <td><strong> <span t-esc="'{0:,.0f}'.format(float(grand_total))"/></strong></td>
-<!--                            <td><strong> <span t-esc="'{0:,.0f}'.format(float(grand_total_fp))"/></strong></td>-->
-<!--                            <td><strong> <span t-esc="'{0:,.0f}'.format(float(grand_total_bank))"/></strong></td>-->
-<!--                            <td><strong> <span t-esc="'{0:,.0f}'.format(float(grand_total_sm))"/></strong></td>-->
+                            <!--                            <td><strong> <span t-esc="'{0:,.0f}'.format(float(grand_total_fp))"/></strong></td>-->
+                            <!--                            <td><strong> <span t-esc="'{0:,.0f}'.format(float(grand_total_bank))"/></strong></td>-->
+                            <!--                            <td><strong> <span t-esc="'{0:,.0f}'.format(float(grand_total_sm))"/></strong></td>-->
                         </tr>
                     </table>
+
+                    <!--                    <t t-set="grand_total_sale" t-value="0"/>-->
+                    <!--                    <t t-set="grand_total_sale_return" t-value="0"/>-->
+                    <!--                    <t t-set="grand_total_purchases" t-value="0"/>-->
+                    <br/>   
+
+                    <div class="clearfix">
+                        <div id="total" class="row">
+                            <div t-attf-class="#{'col-6' if report_type != 'html' else 'col-sm-7 col-md-6'} ml-auto">
+                                <table class="table table-sm" style="page-break-inside: avoid;font-size:16px;">
+
+                                    <tr class="border-black o_subtotal" style="">
+                                        <td><strong>Total Sale</strong></td>
+                                        <td class="text-right">
+                                            <span t-esc="grand_total_sale"/>
+                                        </td>
+                                    </tr>
+
+                                    <tr class="border-black o_total">
+                                        <td><strong>Total Return</strong></td>
+                                        <td class="text-right">
+                                            <span t-esc="'('+str(grand_total_sale_return)+ ')'"/>
+                                        </td>
+                                    </tr>
+
+                                    <tr class="border-black o_total">
+                                        <td><strong>Total Purchase</strong></td>
+                                        <td class="text-right">
+                                            <span t-esc="'('+str(grand_total_purchases)+ ')'"/>
+                                        </td>
+                                    </tr>
+
+                                    <tr class="border-black o_total">
+                                        <td><strong>Net</strong></td>
+                                        <td class="text-right">
+                                            <span class="text-nowrap" t-esc="'{0:,.0f}'.format(grand_total_sale- (grand_total_sale_return+ grand_total_purchases))"/>
+                                        </td>
+                                    </tr>
+
+                                    <tr class="border-black o_total">
+                                        <td><strong>Total Expense</strong></td>
+                                        <td class="text-right">
+                                            <span class="text-nowrap" t-esc="grand_total"/>
+                                        </td>
+                                    </tr>
+
+                                    <tr class="border-black o_total">
+                                        <td><strong>Net Sale</strong></td>
+                                        <td class="text-right">
+                                            <span class="text-nowrap" t-esc="'{0:,.0f}'.format((grand_total_sale- (grand_total_sale_return+ grand_total_purchases))-grand_total)"/>
+                                        </td>
+                                    </tr>
+
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="clearfix">
+                        <div id="total" class="row">
+                            <div t-attf-class="#{'col-6' if report_type != 'html' else 'col-sm-7 col-md-6'} ml-auto">
+                                <table class="table table-sm" style="page-break-inside: avoid;font-size:16px;">
+<!--                                    <t t-set="working_days" t-value="get_working_days()"/>-->
+                                    <tr class="border-black o_subtotal" style="">
+                                        <td><strong>Avg. Sale</strong></td>
+                                        <td class="text-right">
+                                            <span t-esc="'{0:,.0f}'.format(grand_total_sale/get_working_days())"/>
+                                        </td>
+                                    </tr>
+
+                                    <tr class="border-black o_total">
+                                        <td><strong>Avg. Return</strong></td>
+                                        <td class="text-right">
+                                            <span t-esc="'{0:,.0f}'.format(grand_total_sale_return/get_working_days())"/>
+                                        </td>
+                                    </tr>
+                                    <tr class="border-black o_total">
+                                        <td><strong>Return/Sale%</strong></td>
+                                        <td class="text-right">
+                                            <span t-esc="'{0:,.0f}'.format((grand_total_sale_return/grand_total_sale)*100)"/>
+                                        </td>
+                                    </tr>
+                                    <tr class="border-black o_total">
+                                        <td><strong>Avg. Exp</strong></td>
+                                        <td class="text-right">
+                                            <span class="text-nowrap" t-esc="'{0:,.0f}'.format(grand_total/get_working_days())"/>
+                                        </td>
+                                    </tr>
+
+                                    <tr class="border-black o_total">
+                                        <td><strong>Exp/Sale%</strong></td>
+                                        <td class="text-right">
+                                            <span class="text-nowrap" t-esc="'{0:,.0f}'.format((grand_total/grand_total_sale)*100)"/>
+                                        </td>
+                                    </tr>
+
+<!--                                    <tr class="border-black o_total">-->
+<!--                                        <td><strong>Net Sale</strong></td>-->
+<!--                                        <td class="text-right">-->
+<!--                                            <span class="text-nowrap" t-esc="(grand_total_sale- (grand_total_sale_return+ grand_total_purchases))-grand_total"/>-->
+<!--                                        </td>-->
+<!--                                    </tr>-->
+
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <p style="font-size:16px;">
+                          Note: <span t-esc="get_working_days()"/> Working Days
+                       </p>
                 </div>
             </t>
         </t>
