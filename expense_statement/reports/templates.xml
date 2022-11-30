@@ -51,9 +51,15 @@
                             <td><strong> <span t-esc="'{0:,.0f}'.format(float(grand_total_purchases))"/></strong></td>
                         </tr>
                     </table>
-                    <br/>
+<!--                    <br/>-->
+                    <p style="page-break-after: always;"/>
 
                     <h2 class="text-center">Expense Statement</h2>
+                    <h5 class="text-center"><span t-esc="data['branch_id'][1]"/></h5>
+
+                    <div class="text-left">
+                        <p><strong>Date: </strong><span t-esc="data['date_from']" t-options="{'widget': 'date'}"/>  <strong>- </strong><span t-esc="data['date_to']" t-options="{'widget': 'date'}"/></p>
+                    </div>
 
 
                     <table class="table table-sm" style="border:1px solid black;">
