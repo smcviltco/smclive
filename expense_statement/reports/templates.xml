@@ -9,18 +9,18 @@
                         <img t-if="res_company.logo" t-att-src="image_data_uri(res_company.logo)" alt="Logo" width="30%"/>
                     </span>
                 </div>
-<!--                <div class="col-8">-->
-<!--                    <span style="font-weight:bold;">SHAHID MAHMOOD &amp; CO. (PVT) LTD.</span><br/>-->
-<!--                    <span style="font-weight:bold;">Head Office:</span>&#160;<span t-field="res_company.street"/><br/><span t-field="res_company.email"/>&#160;&#160;&#160;<span>Customer Services:&#160;</span><span t-field="res_company.cs"/>-->
-<!--                </div>-->
+                <!--                <div class="col-8">-->
+                <!--                    <span style="font-weight:bold;">SHAHID MAHMOOD &amp; CO. (PVT) LTD.</span><br/>-->
+                <!--                    <span style="font-weight:bold;">Head Office:</span>&#160;<span t-field="res_company.street"/><br/><span t-field="res_company.email"/>&#160;&#160;&#160;<span>Customer Services:&#160;</span><span t-field="res_company.cs"/>-->
+                <!--                </div>-->
             </div>
         </div>
-        <div t-attf-class="article o_report_layout_standard o_company_#{res_company.id}_layout" t-att-data-oe-model="doc and doc._name" t-att-data-oe-id="doc and doc.id" t-att-data-oe-lang="doc and doc.env.context.get('lang')">
-            <div class="pt-5">
-                <t t-call="web.address_layout"/>
-            </div>
-            <t t-raw="0"/>
-        </div>
+<!--        <div t-attf-class="article o_report_layout_standard o_company_#{res_company.id}_layout" t-att-data-oe-model="doc and doc._name" t-att-data-oe-id="doc and doc.id" t-att-data-oe-lang="doc and doc.env.context.get('lang')">-->
+<!--            <div class="pt-5">-->
+<!--                <t t-call="web.address_layout"/>-->
+<!--            </div>-->
+<!--            <t t-raw="0"/>-->
+<!--        </div>-->
         <div t-attf-class="footer o_standard_footer o_company_#{res_company.id}_layout"  style="margin-top:15px; padding-top:20px;">
             <div class="text-center" style="border-top: 1px solid black; margin-top:15px; padding-top:15px;">
                 <ul class="list-inline mb4">
@@ -49,7 +49,7 @@
 
     <template id="expense_statement_rep_temp">
         <t t-call="web.html_container">
-<!--            <t t-call="web.external_layout">-->
+            <!--            <t t-call="web.external_layout">-->
             <div class="article o_report_layout_standard" t-att-data-oe-model="doc and doc._name"
                  t-att-data-oe-id="doc and doc.id">
                 <t t-call="expense_statement.expense_report_header_footer"/>
@@ -113,6 +113,7 @@
                         <p><strong>Date: </strong><span t-esc="data['date_from']" t-options="{'widget': 'date'}"/>  <strong>- </strong><span t-esc="data['date_to']" t-options="{'widget': 'date'}"/></p>
                     </div>
                     <t t-set="grand_total" t-value="0"/>
+                    <t t-set="grand_total_other" t-value="0"/>
 
 
                     <table class="table table-sm" style="border:1px solid black;">
@@ -129,6 +130,14 @@
                         <!--                        <th style="border:1px solid black;">SM</th>-->
                         <th style="border:1px solid black;">Total</th>
 
+                        <t t-foreach="other_expense_accounts" t-as="other_account">
+                            <t t-set="account_total" t-value="get_account_total(other_account)"/>
+                            <t t-if="account_total != 0.0">
+                                <th class="text-center" t-esc="other_expense_accounts.secondary_name" style="border:1px solid black;"/>
+                            </t>
+                        </t>
+                        <th style="border:1px solid black;">Total</th>
+
 
                         <!--                        <t t-set="grand_total_fp" t-value="0"/>-->
                         <!--                        <t t-set="grand_total_bank" t-value="0"/>-->
@@ -136,6 +145,7 @@
 
                         <t t-foreach="dates" t-as="date">
                             <t t-set="grand_total_date" t-value="0"/>
+                            <t t-set="grand_total_expense_date" t-value="0"/>
                             <tr style="border:1px solid black;">
                                 <td style="border:1px solid black;">
                                     <span t-esc="date.strftime('%d/%m/%Y')" class="text-nowrap"/>
@@ -156,6 +166,23 @@
                                 </t>
                                 <td class="text-center" style="border:1px solid black;">
                                     <span t-esc="'{0:,.0f}'.format(grand_total_date)"/>
+                                </td>
+                                <t t-foreach="other_expense_accounts" t-as="other_account">
+                                    <t t-set="o_account_total" t-value="get_account_total(other_account)"/>
+                                    <t t-if="o_account_total != 0.0">
+
+                                        <t t-set="total" t-value="get_date_data(date, other_account)"/>
+
+                                        <t t-set="grand_total_expense_date" t-value="grand_total_expense_date + total"/>
+                                        <t t-set="grand_total_other" t-value="grand_total_other + total"/>
+
+                                        <td class="text-center" style="border:1px solid black;">
+                                            <span t-esc="'{0:,.0f}'.format(float(total))"/>
+                                        </td>
+                                    </t>
+                                </t>
+                                <td class="text-center" style="border:1px solid black;">
+                                    <span t-esc="'{0:,.0f}'.format(grand_total_expense_date)"/>
                                 </td>
                                 <!--                                <t t-set="fp_account_total" t-value="get_fp_account_total(date)"/>-->
                                 <!--                                <td style="border:1px solid black;">-->
@@ -185,7 +212,17 @@
                                     </td>
                                 </t>
                             </t>
+
                             <td><strong> <span t-esc="'{0:,.0f}'.format(float(grand_total))"/></strong></td>
+                            <t t-foreach="other_expense_accounts" t-as="other_acc">
+                                <t t-set="account_other_total" t-value="get_account_total(other_acc)"/>
+                                <t t-if="account_other_total != 0.0">
+                                    <td class="text-center">
+                                        <strong> <span t-esc="'{0:,.0f}'.format(float(account_other_total))"/></strong>
+                                    </td>
+                                </t>
+                            </t>
+                            <td><strong> <span t-esc="'{0:,.0f}'.format(float(grand_total_other))"/></strong></td>
                             <!--                            <td><strong> <span t-esc="'{0:,.0f}'.format(float(grand_total_fp))"/></strong></td>-->
                             <!--                            <td><strong> <span t-esc="'{0:,.0f}'.format(float(grand_total_bank))"/></strong></td>-->
                             <!--                            <td><strong> <span t-esc="'{0:,.0f}'.format(float(grand_total_sm))"/></strong></td>-->
@@ -201,6 +238,13 @@
                         <div id="total" class="row">
                             <div t-attf-class="#{'col-6' if report_type != 'html' else 'col-sm-7 col-md-6'} ml-auto">
                                 <table class="table table-sm" style="page-break-inside: avoid;font-size:16px;">
+
+                                    <tr class="border-black o_subtotal" style="">
+                                        <td><strong>Opening Balance</strong></td>
+                                        <td class="text-right">
+                                            <span t-esc="get_open_balance()"/>
+                                        </td>
+                                    </tr>
 
                                     <tr class="border-black o_subtotal" style="">
                                         <td><strong>Total Sale</strong></td>
@@ -231,9 +275,23 @@
                                     </tr>
 
                                     <tr class="border-black o_total">
-                                        <td><strong>Total Expense</strong></td>
+                                        <td><strong>Expense</strong></td>
                                         <td class="text-right">
                                             <span class="text-nowrap" t-esc="'('+str(grand_total)+ ')'"/>
+                                        </td>
+                                    </tr>
+
+                                    <tr class="border-black o_total">
+                                        <td><strong>Other Expense</strong></td>
+                                        <td class="text-right">
+                                            <span class="text-nowrap" t-esc="'('+str(grand_total_other)+ ')'"/>
+                                        </td>
+                                    </tr>
+
+                                    <tr class="border-black o_total">
+                                        <td><strong>Total Expense</strong></td>
+                                        <td class="text-right">
+                                            <span class="text-nowrap" t-esc="'('+str(grand_total+grand_total_other)+ ')'"/>
                                         </td>
                                     </tr>
 
@@ -287,27 +345,25 @@
                                         </td>
                                     </tr>
 
-                                    <!--                                    <tr class="border-black o_total">-->
-                                    <!--                                        <td><strong>Net Sale</strong></td>-->
-                                    <!--                                        <td class="text-right">-->
-                                    <!--                                            <span class="text-nowrap" t-esc="(grand_total_sale- (grand_total_sale_return+ grand_total_purchases))-grand_total"/>-->
-                                    <!--                                        </td>-->
-                                    <!--                                    </tr>-->
-
-
+                                    <tr class="border-black o_total">
+                                        <td><strong>Closing Balance</strong></td>
+                                        <td class="text-right">
+                                            <span class="text-nowrap" t-esc="'{0:,.2f}'.format((((get_open_balance()+grand_total_sale)-grand_total_sale_return)-grand_total_purchases)-(grand_total+grand_total_other))"/>
+                                        </td>
+                                    </tr>
 
                                 </table>
-                                 <p style="font-size:18px;">
-                                        Note: <span t-esc="get_working_days()"/> Working Days
-                                    </p>
+                                <p style="font-size:18px;">
+                                    Note: <span t-esc="get_working_days()"/> Working Days
+                                </p>
                             </div>
                         </div>
                     </div>
 
 
                 </div>
-                </div>
-<!--            </t>-->
+            </div>
+            <!--            </t>-->
         </t>
     </template>
 

@@ -42,6 +42,7 @@
                     <field name="is_fp"/>
                     <field name="is_bank"/>
                     <field name="is_sm"/>
+                    <field name="is_other_expense"/>
                 </xpath>
             </field>
         </record>

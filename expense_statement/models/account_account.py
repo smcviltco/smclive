@@ -28,6 +28,7 @@ class AccountAccountInherited(models.Model):
     is_fp = fields.Boolean()
     is_bank = fields.Boolean()
     is_sm = fields.Boolean()
+    is_other_expense = fields.Boolean()
 
     @api.constrains('seq_no')
     def check_code(self):

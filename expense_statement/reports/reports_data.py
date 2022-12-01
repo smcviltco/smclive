@@ -93,9 +93,24 @@ class ExpenseStatementReport(models.AbstractModel):
         print(len(days))
         return len(days)
 
+    def get_open_balance(self):
+        print('dd')
+        model = self.env.context.get('active_model')
+        docs = self.env[model].browse(self.env.context.get('active_id'))
+        fb_accounts = self.env['account.account'].search(['|', ('is_bank', '=', True), ('is_sm', '=', True)])
+        recs = self.env['account.move.line'].search(
+            [('account_id', 'in', fb_accounts.ids), ('move_id.state', '=', 'posted'),
+             ('branch_id', '=', docs.branch_id.id), ('move_id.is_inter_branch_transfer', '=', False),
+             ('date', '<', docs.date_from)])
+        tot = 0
+        for rec in recs:
+            tot = tot + (rec.debit - rec.credit)
+        return tot
+
     @api.model
     def _get_report_values(self, docids, data=None):
-        accounts = self.env['account.account'].search([('seq_no', '>', 0)], order='seq_no asc')
+        accounts = self.env['account.account'].search([('seq_no', '>', 0), ('is_other_expense', '=', False)], order='seq_no asc')
+        other_expense_accounts = self.env['account.account'].search([('seq_no', '>', 0), ('is_other_expense', '=', True)], order='seq_no asc')
         move_lines = self.env['account.move.line'].search([('move_id.branch_id', '=', data["form"]['branch_id'][0]), ('account_id', 'in', accounts.ids), ('move_id.state', '=', 'posted'),('date', '>=', data["form"]['date_from']), ('date', '<=', data["form"]['date_to'])], order='date asc')
         dates = move_lines.mapped('date')
         dates = list(dict.fromkeys(dates))
@@ -104,6 +119,7 @@ class ExpenseStatementReport(models.AbstractModel):
             'doc_model': 'menu.report1',
             'data': data['form'],
             'accounts': accounts,
+            'other_expense_accounts': other_expense_accounts,
             # 'fb_accounts': fb_accounts,
             'dates': dates,
             'get_date_data': self.get_date_data,
@@ -115,4 +131,5 @@ class ExpenseStatementReport(models.AbstractModel):
             'get_total_sale_return': self.get_total_sale_return,
             'get_total_purchases': self.get_total_purchases,
             'get_working_days': self.get_working_days,
+            'get_open_balance': self.get_open_balance,
         }
