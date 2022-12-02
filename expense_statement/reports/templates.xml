@@ -53,7 +53,7 @@
             <div class="article o_report_layout_standard" t-att-data-oe-model="doc and doc._name"
                  t-att-data-oe-id="doc and doc.id">
                 <t t-call="expense_statement.expense_report_header_footer"/>
-                <div class="page" style="margin-top:-20px;">
+                <div class="page" >
                     <div class="oe_structure"/>
                     <h3 class="text-center">Sale Statement&#160;(<span t-esc="data['branch_id'][1]"/>)</h3>
 
@@ -133,7 +133,7 @@
                         <t t-foreach="other_expense_accounts" t-as="other_account">
                             <t t-set="account_total" t-value="get_account_total(other_account)"/>
                             <t t-if="account_total != 0.0">
-                                <th class="text-center" t-esc="other_expense_accounts.secondary_name" style="border:1px solid black;"/>
+                                <th class="text-center" t-esc="other_account.secondary_name" style="border:1px solid black;"/>
                             </t>
                         </t>
                         <th style="border:1px solid black;">Total</th>
