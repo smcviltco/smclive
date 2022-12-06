@@ -158,6 +158,16 @@ class ExpenseStatementReport(models.AbstractModel):
              ('date', '>=', docs.date_from), ('date', '<=', docs.date_to)]).mapped('debit'))
         return tot
 
+    def get_inter_branch_balance(self):
+        model = self.env.context.get('active_model')
+        docs = self.env[model].browse(self.env.context.get('active_id'))
+        # fb_accounts = self.env['account.account'].search([('is_bank', '=', True)])
+
+        tot = sum(self.env['account.move.line'].search(
+            [('move_id.is_inter_branch_transfer', '=', True),('move_id.state', '=', 'posted'),('move_id.branch_id', '=', docs.branch_id.id),
+             ('date', '>=', docs.date_from), ('date', '<=', docs.date_to)]).mapped('debit'))
+        return tot
+
     @api.model
     def _get_report_values(self, docids, data=None):
         accounts = self.env['account.account'].search([('seq_no', '>', 0), '|', ('is_other_expense', '=', False), ('is_salary_expense', '=', True)], order='seq_no asc')
@@ -187,4 +197,5 @@ class ExpenseStatementReport(models.AbstractModel):
             # 'get_sm_balance': self.get_sm_balance,
             'get_cash_account': self.get_cash_account,
             'get_bank_balance': self.get_bank_balance,
+            'get_inter_branch_balance': self.get_inter_branch_balance,
         }

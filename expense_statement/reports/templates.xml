@@ -301,11 +301,18 @@
                                     <!--                                            <span class="text-nowrap" t-esc="'('+str(grand_total+grand_total_other)+ ')'"/>-->
                                     <!--                                        </td>-->
                                     <!--                                    </tr>-->
-
+                                    <t t-set="inter_branch" t-value="get_inter_branch_balance()"/>
                                     <tr class="border-black o_total">
                                         <td><strong>Net Sale</strong></td>
                                         <td class="text-right">
-                                            <span class="text-nowrap" t-esc="'{0:,.2f}'.format((((grand_total_sale- (grand_total_sale_return + grand_total_purchases))-grand_total))-grand_total_other)"/>
+                                            <span class="text-nowrap" t-esc="'{0:,.2f}'.format(((((grand_total_sale- (grand_total_sale_return + grand_total_purchases))-grand_total))-grand_total_other)+inter_branch)"/>
+                                        </td>
+                                    </tr>
+
+                                    <tr class="border-black o_total">
+                                        <td><strong>Inter Branch Cash Receive</strong></td>
+                                        <td class="text-right">
+                                            <span class="text-nowrap" t-esc="'{0:,.2f}'.format(inter_branch)"/>
                                         </td>
                                     </tr>
 
