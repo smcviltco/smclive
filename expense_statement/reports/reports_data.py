@@ -163,10 +163,13 @@ class ExpenseStatementReport(models.AbstractModel):
         docs = self.env[model].browse(self.env.context.get('active_id'))
         # fb_accounts = self.env['account.account'].search([('is_bank', '=', True)])
 
-        tot = sum(self.env['account.move.line'].search(
-            [('move_id.is_inter_branch_transfer', '=', True),('move_id.state', '=', 'posted'),('move_id.branch_id', '=', docs.branch_id.id),
+        tot_receive = sum(self.env['account.move.line'].search(
+            [('move_id.is_inter_branch_transfer', '=', True),('move_id.state', '=', 'posted'),('branch_id', '=', docs.branch_id.id),
              ('date', '>=', docs.date_from), ('date', '<=', docs.date_to)]).mapped('debit'))
-        return tot
+        tot_paid = sum(self.env['account.move.line'].search(
+            [('move_id.is_inter_branch_transfer', '=', True),('move_id.state', '=', 'posted'),('branch_id', '=', docs.branch_id.id),
+             ('date', '>=', docs.date_from), ('date', '<=', docs.date_to)]).mapped('credit'))
+        return tot_receive, tot_paid
 
     @api.model
     def _get_report_values(self, docids, data=None):
