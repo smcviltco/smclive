@@ -31,6 +31,7 @@ class AccountAccountInherited(models.Model):
     # is_head_office = fields.Boolean()
     is_other_expense = fields.Boolean()
     statements_branch = fields.Many2one('res.branch')
+    is_salary_expense = fields.Boolean()
 
     @api.constrains('seq_no')
     def check_code(self):

@@ -44,6 +44,7 @@
                     <field name="is_sm"/>
                     <field name="is_other_expense"/>
                     <field name="statements_branch"/>
+                    <field name="is_salary_expense"/>
 <!--                    <field name="is_head_office"/>-->
                 </xpath>
             </field>
