@@ -17,7 +17,7 @@ class AccountPaymentInherited(models.Model):
     _inherit = 'account.payment'
 
     is_sale_return = fields.Boolean()
-    # available_partner_bank_ids = fields.Many2many('res.bank')
+    available_partner_bank_ids = fields.Many2many('res.bank')
 
 
 class AccountAccountInherited(models.Model):
@@ -28,7 +28,9 @@ class AccountAccountInherited(models.Model):
     is_fp = fields.Boolean()
     is_bank = fields.Boolean()
     is_sm = fields.Boolean()
+    # is_head_office = fields.Boolean()
     is_other_expense = fields.Boolean()
+    statements_branch = fields.Many2one('res.branch')
 
     @api.constrains('seq_no')
     def check_code(self):

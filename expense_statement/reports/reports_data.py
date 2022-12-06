@@ -94,7 +94,6 @@ class ExpenseStatementReport(models.AbstractModel):
         return len(days)
 
     def get_open_balance(self):
-        print('dd')
         model = self.env.context.get('active_model')
         docs = self.env[model].browse(self.env.context.get('active_id'))
         fb_accounts = self.env['account.account'].search(['|', ('is_bank', '=', True), ('is_sm', '=', True)])
@@ -105,6 +104,64 @@ class ExpenseStatementReport(models.AbstractModel):
         tot = 0
         for rec in recs:
             tot = tot + (rec.debit - rec.credit)
+        return tot
+
+    def get_construction_balance(self):
+        model = self.env.context.get('active_model')
+        docs = self.env[model].browse(self.env.context.get('active_id'))
+        fb_accounts = self.env['account.account'].search(['|',('user_type_id.name', '=', "Expenses"),('internal_type', '=', 'payable')])
+        partners = self.env['res.partner'].search([('partner_type', '=', "construction")])
+        tot = sum(self.env['account.move.line'].search(
+            [('account_id', 'in', fb_accounts.ids),('partner_id', 'in', partners.ids), ('move_id.state', '=', 'posted'),
+             ('move_id.branch_id', '=', docs.branch_id.id),
+             ('date', '>=', docs.date_from), ('date', '<=', docs.date_to)]).mapped('debit'))
+        print()
+        # tot = 0
+        # for rec in recs:
+        #     tot = tot + (rec.debit - rec.credit)
+        print(tot)
+        return tot
+
+    # def get_sm_balance(self):
+    #     model = self.env.context.get('active_model')
+    #     docs = self.env[model].browse(self.env.context.get('active_id'))
+    #     fb_accounts = self.env['account.account'].search([('is_head_office', '=', True)])
+    #     tot = sum(self.env['account.move.line'].search(
+    #         [('account_id', 'in', fb_accounts.ids), ('move_id.state', '=', 'posted'),
+    #          ('move_id.branch_id', '=', docs.branch_id.id),
+    #          ('date', '>=', docs.date_from), ('date', '<=', docs.date_to)]).mapped('debit'))
+    #     print()
+    #     # tot = 0
+    #     # for rec in recs:
+    #     #     tot = tot + (rec.debit - rec.credit)
+    #     print(tot)
+    #     return tot
+
+    def get_cash_account(self):
+        model = self.env.context.get('active_model')
+        docs = self.env[model].browse(self.env.context.get('active_id'))
+        fb_accounts = self.env['account.account'].search([('is_sm', '=', True)])
+        vals = []
+        for account in fb_accounts:
+            tot = sum(self.env['account.move.line'].search(
+                [('account_id', '=', account.id), ('move_id.state', '=', 'posted'), ('account_id.statements_branch', '!=', docs.branch_id.id),
+                 ('move_id.branch_id', '=', docs.branch_id.id),
+                 ('date', '>=', docs.date_from), ('date', '<=', docs.date_to)]).mapped('debit'))
+            if tot:
+                vals.append({
+                    'account_name': account.name,
+                    'amount': tot,
+                })
+        return vals
+
+    def get_bank_balance(self):
+        model = self.env.context.get('active_model')
+        docs = self.env[model].browse(self.env.context.get('active_id'))
+        fb_accounts = self.env['account.account'].search([('is_bank', '=', True)])
+
+        tot = sum(self.env['account.move.line'].search(
+            [('account_id', 'in', fb_accounts.ids),('move_id.state', '=', 'posted'),('move_id.branch_id', '=', docs.branch_id.id),
+             ('date', '>=', docs.date_from), ('date', '<=', docs.date_to)]).mapped('debit'))
         return tot
 
     @api.model
@@ -132,4 +189,8 @@ class ExpenseStatementReport(models.AbstractModel):
             'get_total_purchases': self.get_total_purchases,
             'get_working_days': self.get_working_days,
             'get_open_balance': self.get_open_balance,
+            'get_construction_balance': self.get_construction_balance,
+            # 'get_sm_balance': self.get_sm_balance,
+            'get_cash_account': self.get_cash_account,
+            'get_bank_balance': self.get_bank_balance,
         }

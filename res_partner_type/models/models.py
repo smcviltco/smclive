@@ -9,6 +9,7 @@ class AddressDomain(models.Model):
         ('customer', 'Customer'),
         ('local_vendor', 'Local Vendor'),
         ('import_vendor', 'Import Vendor'),
+        ('construction', 'Construction'),
 
     ], string='Partner Type', copy=False, tracking=True,
         )
