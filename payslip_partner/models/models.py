@@ -6,6 +6,12 @@ from odoo.exceptions import UserError, ValidationError
 from datetime import datetime
 
 
+class AccountMoveInh(models.Model):
+    _inherit = 'account.move'
+
+    is_salary = fields.Boolean()
+
+
 class HrEmployeeInh(models.Model):
     _inherit = 'hr.employee'
 
@@ -21,6 +27,11 @@ class HrEmployeeInh(models.Model):
 
 class HrPayslipInh(models.Model):
     _inherit = 'hr.payslip'
+
+    def create_update_jv(self):
+        payslips = self.env['hr.payslip'].search([])
+        for s in payslips:
+            s.move_id.is_salary = True
 
     def action_payslip_done(self):
         record = super(HrPayslipInh, self).action_payslip_done()
@@ -42,6 +53,7 @@ class HrPayslipInh(models.Model):
                 if old != -1 and current != -1:
                     move_dict = {
                         'ref': rec.number,
+                        'is_salary': True,
                         'journal_id': rec.journal_id.id,
                         'address_id': rec.address_id.id,
                         # 'partner_id': rec.employee_id.address_home_id.id,

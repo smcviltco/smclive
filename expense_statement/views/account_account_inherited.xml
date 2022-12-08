@@ -69,6 +69,7 @@
 
                 <xpath expr="//field[@name='move_id']" position="before">
                     <field name="is_sale_return"/>
+                    <field name="is_expense"/>
                 </xpath>
             </field>
         </record>

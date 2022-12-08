@@ -319,20 +319,33 @@
                                             </td>
                                         </tr>
                                     </t>
-<!--                                    <t t-if="inter_branch_paid !=0">-->
-<!--                                        <tr class="border-black o_total">-->
-<!--                                            <td><strong>Inter Branch Cash Paid</strong></td>-->
-<!--                                            <td class="text-right">-->
-<!--                                                <span class="text-nowrap" t-esc="'{0:,.2f}'.format(inter_branch_paid)"/>-->
-<!--                                            </td>-->
-<!--                                        </tr>-->
-<!--                                    </t>-->
-                                    <tr class="border-black o_total">
-                                        <td><strong>Construction(89-FF)</strong></td>
-                                        <td class="text-right">
-                                            <span class="text-nowrap" t-esc="'{0:,.2f}'.format(get_construction_balance())"/>
-                                        </td>
-                                    </tr>
+                                    <!--                                    <t t-if="inter_branch_paid !=0">-->
+                                    <!--                                        <tr class="border-black o_total">-->
+                                    <!--                                            <td><strong>Inter Branch Cash Paid</strong></td>-->
+                                    <!--                                            <td class="text-right">-->
+                                    <!--                                                <span class="text-nowrap" t-esc="'{0:,.2f}'.format(inter_branch_paid)"/>-->
+                                    <!--                                            </td>-->
+                                    <!--                                        </tr>-->
+                                    <!--                                    </t>-->
+<!--                                    <tr class="border-black o_total">-->
+<!--                                        <td><strong>Construction(89-FF)</strong></td>-->
+<!--                                        <td class="text-right">-->
+<!--                                            <span class="text-nowrap" t-esc="'{0:,.2f}'.format(get_construction_balance())"/>-->
+<!--                                        </td>-->
+<!--                                    </tr>-->
+
+                                    <t t-set="construction_accounts" t-value="get_construction_balance()"/>
+                                    <t t-set="total_construction_accounts" t-value="0"/>
+                                    <t t-foreach="construction_accounts" t-as="construction_account">
+                                        <tr class="border-black o_total">
+                                            <td><strong><span t-esc="construction_account['partner_name']"/></strong></td>
+                                            <td class="text-right">
+                                                <span class="text-nowrap" t-esc="'{0:,.2f}'.format(construction_account['amount'])"/>
+                                                <t t-set="total_construction_accounts" t-value="total_construction_accounts + construction_account['amount']"/>
+                                            </td>
+                                        </tr>
+                                    </t>
+
 
                                     <!--                                    <tr class="border-black o_total">-->
                                     <!--                                        <td><strong>SM</strong></td>-->
@@ -361,6 +374,18 @@
                                         </td>
                                     </tr>
 
+                                    <t t-set="clearing_accounts" t-value="get_clearing_account()"/>
+                                    <t t-set="total_clearing_accounts" t-value="0"/>
+                                    <t t-foreach="clearing_accounts" t-as="clearing_account">
+                                        <tr class="border-black o_total">
+                                            <td><strong><span t-esc="clearing_account['partner_name']"/></strong></td>
+                                            <td class="text-right">
+                                                <span class="text-nowrap" t-esc="'{0:,.2f}'.format(clearing_account['amount'])"/>
+                                                <t t-set="total_clearing_accounts" t-value="total_clearing_accounts + clearing_account['amount']"/>
+                                            </td>
+                                        </tr>
+                                    </t>
+
                                     <tr class="border-black o_total">
                                         <td><strong>Bank</strong></td>
                                         <td class="text-right">
@@ -370,7 +395,7 @@
 
                                     <tr class="border-black o_total">
                                         <td><strong>Closing Balance</strong></td>
-                                        <t t-set="closing" t-value="((((((((get_open_balance()+grand_total_sale)-grand_total_sale_return)-grand_total_purchases)-get_construction_balance())-get_bank_balance())-total_cash_accounts)-fp_account_total)+inter_branch_receive)-(grand_total+grand_total_other)"/>
+                                        <t t-set="closing" t-value="(((((((((get_open_balance()+grand_total_sale)-grand_total_sale_return)-grand_total_purchases)-total_construction_accounts)-get_bank_balance())-total_cash_accounts)-fp_account_total)+inter_branch_receive)-total_clearing_accounts)-(grand_total+grand_total_other)"/>
                                         <td class="text-right">
                                             <span class="text-nowrap" t-esc="'{0:,.2f}'.format(closing)"/>
                                         </td>

@@ -10,7 +10,7 @@ class ExpenseStatementReport(models.AbstractModel):
         model = self.env.context.get('active_model')
         docs = self.env[model].browse(self.env.context.get('active_id'))
         tot = sum(self.env['account.move.line'].search(
-            [('account_id', '=', account.id),('move_id.state', '=', 'posted'), ('move_id.branch_id', '=', docs.branch_id.id),
+            [('account_id', '=', account.id),('move_id.state', '=', 'posted'), ('move_id.branch_id', '=', docs.branch_id.id),('move_id.is_salary', '=', False),
              ('date', '=', date)]).mapped('debit'))
         return tot
 
@@ -18,7 +18,7 @@ class ExpenseStatementReport(models.AbstractModel):
         model = self.env.context.get('active_model')
         docs = self.env[model].browse(self.env.context.get('active_id'))
         tot = sum(self.env['account.move.line'].search(
-            [('account_id', '=', account.id), ('move_id.branch_id', '=', docs.branch_id.id),
+            [('account_id', '=', account.id), ('move_id.branch_id', '=', docs.branch_id.id),('move_id.is_salary', '=', False),
              ('date', '>=', docs.date_from),('move_id.state', '=', 'posted'), ('date', '<=', docs.date_to)]).mapped('debit'))
         return tot
 
@@ -110,11 +110,18 @@ class ExpenseStatementReport(models.AbstractModel):
         docs = self.env[model].browse(self.env.context.get('active_id'))
         fb_accounts = self.env['account.account'].search(['|',('user_type_id.name', '=', "Expenses"),('internal_type', '=', 'payable')])
         partners = self.env['res.partner'].search([('partner_type', '=', "construction")])
-        tot = sum(self.env['account.move.line'].search(
-            [('account_id', 'in', fb_accounts.ids),('partner_id', 'in', partners.ids), ('move_id.state', '=', 'posted'),
-             ('move_id.branch_id', '=', docs.branch_id.id),
-             ('date', '>=', docs.date_from), ('date', '<=', docs.date_to)]).mapped('debit'))
-        return tot
+        vals = []
+        for partner in partners:
+            tot = sum(self.env['account.move.line'].search(
+                [('account_id', 'in', fb_accounts.ids),('partner_id', '=', partner.id), ('move_id.state', '=', 'posted'),
+                 ('move_id.branch_id', '=', docs.branch_id.id),
+                 ('date', '>=', docs.date_from), ('date', '<=', docs.date_to)]).mapped('debit'))
+            if tot:
+                vals.append({
+                    'partner_name': partner.name,
+                    'amount': tot,
+                })
+        return vals
 
     # def get_sm_balance(self):
     #     model = self.env.context.get('active_model')
@@ -129,7 +136,7 @@ class ExpenseStatementReport(models.AbstractModel):
     #     # for rec in recs:
     #     #     tot = tot + (rec.debit - rec.credit)
     #     print(tot)
-    #     return tot
+    #     return tot clearing_accounts
 
     def get_cash_account(self):
         model = self.env.context.get('active_model')
@@ -144,6 +151,27 @@ class ExpenseStatementReport(models.AbstractModel):
             if tot:
                 vals.append({
                     'account_name': account.name,
+                    'amount': tot,
+                })
+        return vals
+
+    def get_clearing_account(self):
+        model = self.env.context.get('active_model')
+        docs = self.env[model].browse(self.env.context.get('active_id'))
+        move_lines = self.env['account.move.line'].search(
+            [('payment_id.is_expense', '=', True), ('move_id.state', '=', 'posted'),
+             ('move_id.branch_id', '=', docs.branch_id.id),
+             ('date', '>=', docs.date_from), ('date', '<=', docs.date_to)])
+        partners = move_lines.mapped('payment_id.partner_id')
+        vals = []
+        for partner in partners:
+            tot = sum(self.env['account.move.line'].search(
+                [('payment_id.partner_id', '=', partner.id), ('move_id.state', '=', 'posted'), ('payment_id.is_expense', '=', True),
+                 ('move_id.branch_id', '=', docs.branch_id.id),
+                 ('date', '>=', docs.date_from), ('date', '<=', docs.date_to)]).mapped('debit'))
+            if tot:
+                vals.append({
+                    'partner_name': partner.name,
                     'amount': tot,
                 })
         return vals
@@ -175,7 +203,7 @@ class ExpenseStatementReport(models.AbstractModel):
     def _get_report_values(self, docids, data=None):
         accounts = self.env['account.account'].search([('seq_no', '>', 0), '|', ('is_other_expense', '=', False), ('is_salary_expense', '=', True)], order='seq_no asc')
         other_expense_accounts = self.env['account.account'].search([('seq_no', '>', 0), ('is_other_expense', '=', True)], order='seq_no asc')
-        move_lines = self.env['account.move.line'].search([('move_id.branch_id', '=', data["form"]['branch_id'][0]), ('account_id', 'in', accounts.ids), ('move_id.state', '=', 'posted'),('date', '>=', data["form"]['date_from']), ('date', '<=', data["form"]['date_to'])], order='date asc')
+        move_lines = self.env['account.move.line'].search([('move_id.branch_id', '=', data["form"]['branch_id'][0]), ('account_id', 'in', accounts.ids), ('move_id.is_salary', '=', False),('move_id.state', '=', 'posted'),('date', '>=', data["form"]['date_from']), ('date', '<=', data["form"]['date_to'])], order='date asc')
         dates = move_lines.mapped('date')
         dates = list(dict.fromkeys(dates))
         return {
@@ -199,6 +227,7 @@ class ExpenseStatementReport(models.AbstractModel):
             'get_construction_balance': self.get_construction_balance,
             # 'get_sm_balance': self.get_sm_balance,
             'get_cash_account': self.get_cash_account,
+            'get_clearing_account': self.get_clearing_account,
             'get_bank_balance': self.get_bank_balance,
             'get_inter_branch_balance': self.get_inter_branch_balance,
         }

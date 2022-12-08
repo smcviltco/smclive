@@ -17,6 +17,7 @@ class AccountPaymentInherited(models.Model):
     _inherit = 'account.payment'
 
     is_sale_return = fields.Boolean()
+    is_expense = fields.Boolean()
     # available_partner_bank_ids = fields.Many2many('res.bank')
 
 
