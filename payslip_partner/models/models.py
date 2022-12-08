@@ -28,10 +28,10 @@ class HrEmployeeInh(models.Model):
 class HrPayslipInh(models.Model):
     _inherit = 'hr.payslip'
 
-    def create_update_jv(self):
-        payslips = self.env['hr.payslip'].search([])
-        for s in payslips:
-            s.move_id.is_salary = True
+    # def create_update_jv(self):
+    #     payslips = self.env['hr.payslip'].search([])
+    #     for s in payslips:
+    #         s.move_id.is_salary = True
 
     def action_payslip_done(self):
         record = super(HrPayslipInh, self).action_payslip_done()

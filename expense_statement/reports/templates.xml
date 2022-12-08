@@ -128,7 +128,7 @@
                         <!--                        <th style="border:1px solid black;">F-P</th>-->
                         <!--                        <th style="border:1px solid black;">Bank</th>-->
                         <!--                        <th style="border:1px solid black;">SM</th>-->
-                        <th style="border:1px solid black;">Total</th>
+                        <th style="border:1px solid black;" class="text-center">Branch EXP</th>
 
                         <t t-foreach="other_expense_accounts" t-as="other_account">
                             <t t-set="account_total" t-value="get_account_total(other_account)"/>
@@ -136,7 +136,7 @@
                                 <th class="text-center" t-esc="other_account.secondary_name" style="border:1px solid black;"/>
                             </t>
                         </t>
-                        <th style="border:1px solid black;">Total</th>
+                        <th style="border:1px solid black;" class="text-center">O.EXP</th>
 
 
                         <!--                        <t t-set="grand_total_fp" t-value="0"/>-->

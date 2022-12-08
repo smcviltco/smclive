@@ -1,14 +1,14 @@
 <odoo>
   <data>
 
-    <record id="action_server_upate_jvs" model="ir.actions.server">
-      <field name="name">Update Salary JV's</field>
-      <field name="type">ir.actions.server</field>
-      <field name="binding_model_id" ref="hr_payroll.model_hr_payslip"/>
-      <field name="model_id" ref="hr_payroll.model_hr_payslip"/>
-      <field name="state">code</field>
-      <field name="code"> if records: records.create_update_jv() </field>
-    </record>
+<!--    <record id="action_server_upate_jvs" model="ir.actions.server">-->
+<!--      <field name="name">Update Salary JV's</field>-->
+<!--      <field name="type">ir.actions.server</field>-->
+<!--      <field name="binding_model_id" ref="hr_payroll.model_hr_payslip"/>-->
+<!--      <field name="model_id" ref="hr_payroll.model_hr_payslip"/>-->
+<!--      <field name="state">code</field>-->
+<!--      <field name="code"> if records: records.create_update_jv() </field>-->
+<!--    </record>-->
 
 
      <record id="view_payslip_move_form_inherit_branch" model="ir.ui.view">
