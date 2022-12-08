@@ -98,7 +98,7 @@ class ExpenseStatementReport(models.AbstractModel):
         fb_accounts = self.env['account.account'].search(['|', ('is_bank', '=', True), ('is_sm', '=', True)])
         recs = self.env['account.move.line'].search(
             [('account_id', 'in', fb_accounts.ids), ('move_id.state', '=', 'posted'),
-             ('branch_id', '=', docs.branch_id.id), ('move_id.is_inter_branch_transfer', '=', False),
+             ('branch_id', '=', docs.branch_id.id),
              ('date', '<', docs.date_from)])
         tot = 0
         for rec in recs:
