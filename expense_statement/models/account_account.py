@@ -21,6 +21,7 @@ class AccountPaymentInherited(models.Model):
     # available_partner_bank_ids = fields.Many2many('res.bank')
 
 
+
 class AccountAccountInherited(models.Model):
     _inherit = 'account.account'
 
