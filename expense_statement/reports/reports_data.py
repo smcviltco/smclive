@@ -389,6 +389,17 @@ class ExpenseStatementReport(models.AbstractModel):
              ('date', '=', date)]).mapped('debit'))
         return tot
 
+    def get_headoffice_dates(self):
+        model = self.env.context.get('active_model')
+        rec_model = self.env[model].browse(self.env.context.get('active_id'))
+        move_lines = self.env['account.move.line'].search([('date', '>=', rec_model.date_from),
+                                                           ('date', '<=', rec_model.date_to),
+                                                           ('move_id.state', '=', 'posted'),
+                                                           ('account_id', '=', 371)], order="date asc")
+        dates = move_lines.mapped('date')
+        dates = list(dict.fromkeys(dates))
+        return dates
+
     def get_raiwind_dates(self):
         model = self.env.context.get('active_model')
         rec_model = self.env[model].browse(self.env.context.get('active_id'))
@@ -481,6 +492,7 @@ class ExpenseStatementReport(models.AbstractModel):
 
             'get_open_balance_cashin_raiwind': self.get_open_balance_cashin_raiwind,
             'cashin_accounts_raiwind': self.cashin_accounts_raiwind,
+            'get_headoffice_dates': self.get_headoffice_dates,
             'get_raiwind_dates': self.get_raiwind_dates,
             'get_cashin_expense_accounts_raiwaind': self.get_cashin_expense_accounts_raiwaind,
             'get_cashin_expense_accounts_raiwaind_total': self.get_cashin_expense_accounts_raiwaind_total,

@@ -489,7 +489,7 @@
                             <!--                        </t>-->
                             <th style="border:1px solid black;" class="text-center">Total.EXP</th>
 
-                            <t t-foreach="dates" t-as="date">
+                            <t t-foreach="get_headoffice_dates()" t-as="date">
                                 <t t-set="grand_total_date" t-value="0"/>
                                 <t t-set="grand_total_expense_date" t-value="0"/>
                                 <tr style="border:1px solid black;">
