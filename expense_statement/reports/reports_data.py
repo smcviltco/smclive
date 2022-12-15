@@ -248,7 +248,7 @@ class ExpenseStatementReport(models.AbstractModel):
                                                         ('is_check', '=', False)], order="date asc")
         moves = move_lines.mapped('move_id').ids
         move_lines_debit = self.env['account.move.line'].search(
-            [('move_id.state', '=', 'posted'), ('move_id', 'in', moves), ('debit', '!=', 0),
+            [('move_id.state', '=', 'posted'), ('move_id', 'in', moves), ('debit', '!=', 0),('account_id', '!=', 8),
              ('date', '>=', rec_model.date_from), ('date', '<=', rec_model.date_to)])
         debit_accounts = move_lines_debit.mapped('account_id')
         # accounts = self.env['account.move.line'].search(
@@ -324,10 +324,76 @@ class ExpenseStatementReport(models.AbstractModel):
         for rec in lines:
         # if tot:
             vals.append({
-                'partner_name': rec.partner_id.name,
+                'partner_id': rec.partner_id.id,
+                'partner_name': rec.partner_id.secondary_name,
                 'amount': rec.debit,
             })
         return vals
+
+    def cashin_payable_partner(self, date, partner):
+        model = self.env.context.get('active_model')
+        rec_model = self.env[model].browse(self.env.context.get('active_id'))
+        move_lines = self.env['account.move.line'].search([('date', '=', date),
+                                                           ('move_id.state', '=', 'posted'),
+                                                           ('credit', '!=', 0),
+                                                           ('account_id', '=', 371),
+                                                           ('is_check', '=', False)], order="date asc")
+        moves = move_lines.mapped('move_id').ids
+        move_lines_debit = self.env['account.move.line'].search(
+            [('move_id.state', '=', 'posted'), ('move_id', 'in', moves), ('debit', '!=', 0),
+             ('date', '=', date)])
+        debit_accounts = move_lines_debit.mapped('account_id')
+        debit_accounts = debit_accounts.filtered(lambda i: i.internal_type == 'payable')
+        vals = []
+        # for account in credit_accounts:
+        #     if account.id != 371:
+        lines = self.env['account.move.line'].search(
+        [('account_id', 'in', debit_accounts.ids), ('move_id.state', '=', 'posted'), ('move_id', 'in', moves),('partner_id', '=', partner),
+         ('date', '=', date)])
+        amount = 0
+        for rec in lines:
+            amount = amount + rec.debit
+        # if tot:
+        #     vals.append({
+        #         'partner_id': rec.partner_id.id,
+        #         'partner_name': rec.partner_id.name,
+        #         'amount': rec.debit,
+        #     })
+        return amount
+
+    def cashin_payable_partner_total(self, partner):
+        model = self.env.context.get('active_model')
+        rec_model = self.env[model].browse(self.env.context.get('active_id'))
+        move_lines = self.env['account.move.line'].search([('date', '>=', rec_model.date_from),
+                                                        ('date', '<=', rec_model.date_to),
+                                                           ('move_id.state', '=', 'posted'),
+                                                           ('credit', '!=', 0),
+                                                           ('account_id', '=', 371),
+                                                           ('is_check', '=', False)], order="date asc")
+        moves = move_lines.mapped('move_id').ids
+        move_lines_debit = self.env['account.move.line'].search(
+            [('move_id.state', '=', 'posted'), ('move_id', 'in', moves), ('debit', '!=', 0),
+             ('date', '>=', rec_model.date_from),
+             ('date', '<=', rec_model.date_to),])
+        debit_accounts = move_lines_debit.mapped('account_id')
+        debit_accounts = debit_accounts.filtered(lambda i: i.internal_type == 'payable')
+        vals = []
+        # for account in credit_accounts:
+        #     if account.id != 371:
+        lines = self.env['account.move.line'].search(
+        [('account_id', 'in', debit_accounts.ids), ('move_id.state', '=', 'posted'), ('move_id', 'in', moves),('partner_id', '=', partner),
+         ('date', '>=', rec_model.date_from),
+         ('date', '<=', rec_model.date_to),])
+        amount = 0
+        for rec in lines:
+            amount = amount + rec.debit
+        # if tot:
+        #     vals.append({
+        #         'partner_id': rec.partner_id.id,
+        #         'partner_name': rec.partner_id.name,
+        #         'amount': rec.debit,
+        #     })
+        return amount
 
     def get_cashin_expense_accounts_raiwaind(self):
         model = self.env.context.get('active_model')
@@ -435,7 +501,7 @@ class ExpenseStatementReport(models.AbstractModel):
             [('move_id.state', '=', 'posted'), ('move_id', 'in', moves),('credit', '!=', 0),
              ('date', '>=', docs.date_from), ('date', '<=', docs.date_to)])
         credit_accounts = move_lines_credit.mapped('account_id')
-        credit_accounts = credit_accounts.filtered(lambda i:i.internal_type == 'liquidity')
+        credit_accounts = credit_accounts.filtered(lambda i: i.internal_type in ['liquidity', 'other'])
         vals = []
         for account in credit_accounts:
             if account.id != 174:
@@ -488,6 +554,8 @@ class ExpenseStatementReport(models.AbstractModel):
             'get_cashin_expense_account': self.get_cashin_expense_account,
             'get_cashin_expense_account_date': self.get_cashin_expense_account_date,
             'cashin_payable_accounts': self.cashin_payable_accounts,
+            'cashin_payable_partner': self.cashin_payable_partner,
+            'cashin_payable_partner_total': self.cashin_payable_partner_total,
 
 
             'get_open_balance_cashin_raiwind': self.get_open_balance_cashin_raiwind,

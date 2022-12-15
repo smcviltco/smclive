@@ -10,7 +10,7 @@ class AccountMoveInherited(models.Model):
     def action_add_branch(self):
         moves = self.env['account.move.line'].search([('branch_id', '=', False)])
         for rec in moves:
-                rec.branch_id = rec.move_id.branch_id.id
+            rec.branch_id = rec.move_id.branch_id.id
 
 
 class AccountPaymentInherited(models.Model):
@@ -19,7 +19,6 @@ class AccountPaymentInherited(models.Model):
     is_sale_return = fields.Boolean()
     is_expense = fields.Boolean()
     # available_partner_bank_ids = fields.Many2many('res.bank')
-
 
 
 class AccountAccountInherited(models.Model):
