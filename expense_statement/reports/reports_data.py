@@ -212,6 +212,34 @@ class ExpenseStatementReport(models.AbstractModel):
              ('date', '>=', docs.date_from), ('date', '<=', docs.date_to)]).mapped('credit'))
         return tot_receive, tot_paid
 
+    def cashin_receive_accounts(self):
+        model = self.env.context.get('active_model')
+        docs = self.env[model].browse(self.env.context.get('active_id'))
+        move_lines = self.env['account.move.line'].search(
+            [('account_id', '=', 371), ('move_id.state', '=', 'posted'), ('debit', '!=', 0),
+             ('date', '>=', docs.date_from), ('date', '<=', docs.date_to)])
+        moves = move_lines.mapped('move_id').ids
+        move_lines_credit = self.env['account.move.line'].search(
+            [('move_id.state', '=', 'posted'), ('move_id', 'in', moves), ('credit', '!=', 0),
+             ('date', '>=', docs.date_from), ('date', '<=', docs.date_to)])
+        credit_accounts = move_lines_credit.mapped('account_id')
+        credit_accounts = credit_accounts.filtered(lambda i: i.internal_type in ['receivable'])
+        vals = []
+        # for account in credit_accounts:
+            # if account.id != 371:
+        lines = self.env['account.move.line'].search(
+            [('account_id', 'in', credit_accounts.ids), ('move_id.state', '=', 'posted'), ('move_id', 'in', moves),
+             ('credit', '!=', 0),
+             ('date', '>=', docs.date_from), ('date', '<=', docs.date_to)])
+        tot = 0
+        for rec in lines:
+            vals.append({
+                'partner_name': rec.partner_id.name,
+                'amount': rec.credit,
+            })
+        return vals
+
+
     def cashin_accounts(self):
         model = self.env.context.get('active_model')
         docs = self.env[model].browse(self.env.context.get('active_id'))
@@ -223,7 +251,7 @@ class ExpenseStatementReport(models.AbstractModel):
             [('move_id.state', '=', 'posted'), ('move_id', 'in', moves),('credit', '!=', 0),
              ('date', '>=', docs.date_from), ('date', '<=', docs.date_to)])
         credit_accounts = move_lines_credit.mapped('account_id')
-        credit_accounts = credit_accounts.filtered(lambda i:i.internal_type == 'liquidity')
+        credit_accounts = credit_accounts.filtered(lambda i:i.internal_type in ['liquidity', ])
         vals = []
         for account in credit_accounts:
             if account.id != 371:
@@ -316,18 +344,17 @@ class ExpenseStatementReport(models.AbstractModel):
         debit_accounts = move_lines_debit.mapped('account_id')
         debit_accounts = debit_accounts.filtered(lambda i: i.internal_type == 'payable')
         vals = []
-        # for account in credit_accounts:
-        #     if account.id != 371:
-        lines = self.env['account.move.line'].search(
-        [('account_id', 'in', debit_accounts.ids), ('move_id.state', '=', 'posted'), ('move_id', 'in', moves),
+        lines = self.env['account.move.line'].search([('account_id', 'in', debit_accounts.ids),
+         ('move_id.state', '=', 'posted'), ('move_id', 'in', moves),
          ('date', '>=', rec_model.date_from), ('date', '<=', rec_model.date_to)])
+
         for rec in lines:
-        # if tot:
-            vals.append({
-                'partner_id': rec.partner_id.id,
-                'partner_name': rec.partner_id.secondary_name,
-                'amount': rec.debit,
-            })
+            if not any(d['partner_id'] == rec.partner_id.id for d in vals):
+                vals.append({
+                    'partner_id': rec.partner_id.id,
+                    'partner_name': rec.partner_id.secondary_name,
+                    'amount': rec.debit,
+                })
         return vals
 
     def cashin_payable_partner(self, date, partner):
@@ -522,8 +549,6 @@ class ExpenseStatementReport(models.AbstractModel):
         move_lines = self.env['account.move.line'].search([('move_id.branch_id', '=', data["form"]['branch_id'][0]), ('account_id', 'in', accounts.ids), ('move_id.is_salary', '=', False),('move_id.state', '=', 'posted'),('date', '>=', data["form"]['date_from']), ('date', '<=', data["form"]['date_to'])], order='date asc')
         dates = move_lines.mapped('date')
         dates = list(dict.fromkeys(dates))
-        print(dates)
-        # print(data['form']['branch_id'])
         return {
             'doc_ids': docids,
             'doc_model': 'menu.report1',
@@ -550,6 +575,7 @@ class ExpenseStatementReport(models.AbstractModel):
             'get_bank_balance': self.get_bank_balance,
             'get_inter_branch_balance': self.get_inter_branch_balance,
             'cashin_accounts': self.cashin_accounts,
+            'cashin_receive_accounts': self.cashin_receive_accounts,
             'get_cashin_expense_accounts': self.get_cashin_expense_accounts,
             'get_cashin_expense_account': self.get_cashin_expense_account,
             'get_cashin_expense_account_date': self.get_cashin_expense_account_date,
