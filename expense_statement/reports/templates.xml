@@ -411,7 +411,7 @@
 
                                         <tr class="border-black o_total">
                                             <td><strong>Closing Balance</strong></td>
-                                            <t t-set="closing" t-value="(((((((((get_open_balance()+grand_total_sale+other_income_data)-grand_total_sale_return)-grand_total_purchases)-total_construction_accounts)-get_bank_balance())-total_cash_accounts)-fp_account_total)+inter_branch_receive)-total_clearing_accounts)-(grand_total+grand_total_other)"/>
+                                            <t t-set="closing" t-value="(((((((((get_open_balance()+grand_total_sale+total_other_income_data)-grand_total_sale_return)-grand_total_purchases)-total_construction_accounts)-get_bank_balance())-total_cash_accounts)-fp_account_total)+inter_branch_receive)-total_clearing_accounts)-(grand_total+grand_total_other)"/>
                                             <td class="text-right">
                                                 <span class="text-nowrap" t-esc="'{0:,.2f}'.format(closing)"/>
                                             </td>
