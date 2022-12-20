@@ -338,6 +338,18 @@
                                         <!--                                        </td>-->
                                         <!--                                    </tr>-->
 
+                                        <t t-set="other_income_data" t-value="get_other_income_data()"/>
+                                        <t t-set="total_other_income_data" t-value="0"/>
+                                        <t t-foreach="other_income_data" t-as="other_income">
+                                            <tr class="border-black o_total">
+                                                <td><strong><span t-esc="other_income['account_name']"/></strong></td>
+                                                <td class="text-right">
+                                                    <span class="text-nowrap" t-esc="'{0:,.2f}'.format(other_income['amount'])"/>
+                                                    <t t-set="total_other_income_data" t-value="total_other_income_data + other_income['amount']"/>
+                                                </td>
+                                            </tr>
+                                        </t>
+
                                         <t t-set="construction_accounts" t-value="get_construction_balance()"/>
                                         <t t-set="total_construction_accounts" t-value="0"/>
                                         <t t-foreach="construction_accounts" t-as="construction_account">

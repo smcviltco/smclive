@@ -542,6 +542,23 @@ class ExpenseStatementReport(models.AbstractModel):
                     })
         return vals
 
+    def get_other_income_data(self):
+        model = self.env.context.get('active_model')
+        docs = self.env[model].browse(self.env.context.get('active_id'))
+        accounts = self.env['account.account'].search([('user_type_id.name', '=', 'Other Income')])
+        vals = []
+        print('--------', accounts)
+        for account in accounts:
+            tot = sum(self.env['account.move.line'].search(
+            [('account_id', '=', account.id), ('move_id.state', '=', 'posted'),
+             ('date', '>=', docs.date_from), ('date', '<=', docs.date_to),('move_id.branch_id', '=', docs.branch_id.id)]).mapped('credit'))
+            if tot:
+                vals.append({
+                    'account_name': account.name,
+                    'amount': tot,
+                })
+        return vals
+
     @api.model
     def _get_report_values(self, docids, data=None):
         accounts = self.env['account.account'].search([('seq_no', '>', 0), '|', ('is_other_expense', '=', False), ('is_salary_expense', '=', True)], order='seq_no asc')
@@ -591,6 +608,7 @@ class ExpenseStatementReport(models.AbstractModel):
             'get_cashin_expense_accounts_raiwaind': self.get_cashin_expense_accounts_raiwaind,
             'get_cashin_expense_accounts_raiwaind_total': self.get_cashin_expense_accounts_raiwaind_total,
             'get_cashin_expense_accounts_raiwaind_date': self.get_cashin_expense_accounts_raiwaind_date,
+            'get_other_income_data': self.get_other_income_data,
 
 
         }
