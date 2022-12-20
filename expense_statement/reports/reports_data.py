@@ -54,9 +54,13 @@ class ExpenseStatementReport(models.AbstractModel):
         docs = self.env[model].browse(self.env.context.get('active_id'))
         fb_accounts = self.env['account.account'].search(['|', ('is_bank', '=', True), ('is_sm', '=', True)])
         tot = sum(self.env['account.move.line'].search(
-            [('account_id', 'in', fb_accounts.ids),('move_id.state', '=', 'posted'), ('branch_id', '=', docs.branch_id.id),('move_id.is_inter_branch_transfer', '=', False),
+            [('account_id', 'in', fb_accounts.ids), ('move_id.state', '=', 'posted'), ('branch_id', '=', docs.branch_id.id),('move_id.is_inter_branch_transfer', '=', False),
              ('date', '=', date)]).mapped('debit'))
-        return tot
+
+        tot_minus = sum(self.env['account.move.line'].search(
+            [('account_id.user_type_id.name', '=', 'Other Income'), ('move_id.state', '=', 'posted'),
+             ('date', '=', date),('move_id.branch_id', '=', docs.branch_id.id)]).mapped('credit'))
+        return tot - tot_minus
 
     def get_total_sale_return(self, date):
         model = self.env.context.get('active_model')
@@ -111,7 +115,6 @@ class ExpenseStatementReport(models.AbstractModel):
         fb_accounts = self.env['account.account'].search([('id', '=', 371)])
         recs = self.env['account.move.line'].search(
             [('account_id', 'in', fb_accounts.ids), ('move_id.state', '=', 'posted'),
-
              ('date', '<', docs.date_from)])
         tot = 0
         for rec in recs:
