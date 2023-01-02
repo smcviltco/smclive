@@ -9,7 +9,8 @@ class IrAttachment(models.Model):
 
     def unlink(self):
         for rec in self:
-            rec.remove_attachment()
+            if rec.res_model in ['stock.picking']:
+                rec.remove_attachment()
             # if not rec.env.user.has_group('stock.group_stock_manager') and rec.res_model in ['stock.picking']:
             #     raise ValidationError("Sorry, you are not allowed to delete the attachment.")
         return super(IrAttachment, self).unlink()
@@ -29,7 +30,8 @@ class IrAttachment(models.Model):
     @api.model
     def create(self, vals_list):
         rec = super().create(vals_list)
-        rec.add_attachment()
+        if rec.res_model in ['stock.picking']:
+            rec.add_attachment()
         return rec
 
 
