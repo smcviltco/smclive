@@ -116,7 +116,7 @@
                             <tr>
                                 <strong> <td style="border-bottom:1px solid black;" colspan="6" class="text-left"><strong>Opening Balance</strong></td></strong>
                                 <!--                            <td style="border-bottom:1px solid black;" class="text-right"><strong><span t-esc="openbal"/></strong></td>-->
-                                <td style="border-bottom:1px solid black;" class="text-right"><strong><span t-esc="'{0:,.0f}'.format(int(opening))"/></strong></td>
+                                <td style="border-bottom:1px solid black;" class="text-right text-nowrap"><strong><span t-esc="'{0:,.0f}'.format(int(opening))"/></strong></td>
                             </tr>
                             <t t-set="bal" t-value="opening"/>
                             <t t-set="counter" t-value="0"/>
