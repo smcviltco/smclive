@@ -20,8 +20,23 @@ class HrEmployeeInh(models.Model):
         rec = super(HrEmployeeInh, self).create(vals)
         record = self.env['res.partner'].create({
             'name': vals['name'],
+            'partner_type': 'employee',
+            'is_employee': True,
         })
+        record_current = self.env['res.partner'].create({
+            'name': vals['name']+'- Current Advance',
+            'is_current': True,
+            'partner_type': 'employee',
+            'is_employee': True,
+        })
+        record_old = self.env['res.partner'].create({
+            'name': vals['name'] + '- Old Advance',
+            'partner_type': 'employee',
+            'is_employee': True,
+        })
+        records = [record_current.id, record_old.id]
         rec.address_home_id = record
+        rec.partner_ids = records
         return rec
 
 
@@ -36,6 +51,21 @@ class HrPayslipInh(models.Model):
     def action_payslip_done(self):
         record = super(HrPayslipInh, self).action_payslip_done()
         self._action_general_entry()
+        for rec in self:
+            new_partner = ''
+            old_partner = ''
+            if rec.employee_id.partner_ids:
+                for partner in rec.employee_id.partner_ids:
+                    if partner.is_current:
+                        new_partner = partner.id
+                    if not partner.is_current:
+                        old_partner = partner.id
+            for line in rec.move_id.line_ids:
+                if line.account_id.is_new:
+                    line.partner_id = new_partner
+                if line.account_id.is_old:
+                    line.partner_id = old_partner
+        return record
 
     def _action_general_entry(self):
         line_ids = []
