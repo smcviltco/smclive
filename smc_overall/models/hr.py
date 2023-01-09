@@ -41,6 +41,7 @@ class HrPayslipInh(models.Model):
 
     def action_payslip_done(self):
         record = super(HrPayslipInh, self).action_payslip_done()
+        print('ddddddd')
         for rec in self:
             new_partner = ''
             old_partner = ''
